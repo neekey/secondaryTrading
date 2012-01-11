@@ -18,18 +18,26 @@ userHandle.prototype = {
 
     add: function( email, password, options, next ){
 
+        if( typeof options === 'function' ){
+
+            next = options;
+            options = null;
+        }
+
         var newUserModel = {
             email: email,
             password: password
         }, newUser;
 
-        _.each( userOptions, function( op ){
+        if( options ){
+            _.each( userOptions, function( op ){
 
-            if( op in options ){
+                if( op in options ){
 
-                newUserModel[ op ] = options[ op ];
-            }
-        });
+                    newUserModel[ op ] = options[ op ];
+                }
+            });
+        }
 
         newUser = new User( newUserModel );
 
@@ -38,7 +46,7 @@ userHandle.prototype = {
                 return this.emit( 'error', err, 'user add failed!' );
             }
             else {
-                next();
+                return next();
             }
         });
     }

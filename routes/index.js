@@ -3,7 +3,7 @@
  * GET home page.
  */
 
-var db = require( '../database/index' ),
+var DB = require( '../database/' ),
     API = require( '../api/api.js' );
 
 module.exports = {
@@ -46,16 +46,15 @@ var Router ={
                 password = data.password,
                 callback = data.callback;
 
-            //res.send( 'register' );
             API.send( req, res, { result: true, type: 'register', data: { neekey: 'test' }, error: 'no error' } );
 
             /*
-            db.user.add( email, password, {}, function(){
+            DB.user.add( email, password, {}, function(){
 
                 res.send( 'register success' );
             });
 
-            db.user.on( 'error', function(){
+            DB.user.on( 'error', function(){
 
                 res.send( 'register failed!' );
             });
