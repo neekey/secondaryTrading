@@ -41,24 +41,31 @@ var Router ={
         rule: '/register',
         fn: function( req, res ){
 
-            var data = req.query,
-                email = data.email,
-                password = data.password,
-                callback = data.callback;
+            var data = req.query;
+            var email = data.email;
+            var password = data.password;
+            var options = data.options;
 
-            API.send( req, res, { result: true, type: 'register', data: { neekey: 'test' }, error: 'no error' } );
+            // 监听抛出的错误
+            DB.user.on( '_error', function( error ){
 
-            /*
-            DB.user.add( email, password, {}, function(){
-
-                res.send( 'register success' );
+                API.send( req, res, {
+                    result: false,
+                    type: 'register',
+                    error: 'register failed',
+                    data: error
+                });
             });
 
-            DB.user.on( 'error', function(){
+            // 添加用户
+            DB.user.add( email, password, options, function( user ){
 
-                res.send( 'register failed!' );
+                API.send( req, res, {
+                    result: true,
+                    type: 'register',
+                    data: user
+                });
             });
-            */
         }
     }
 };

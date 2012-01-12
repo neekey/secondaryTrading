@@ -107,4 +107,73 @@ describe( '用户操作接口', function(){
             expect( user.location[ 1 ] ).toEqual( options.location[ 1 ] );
         });
     });
+
+    it( '重复（email）添加用户', function(){
+
+        var email = 'jasmine_user_api_add' + Date.now() + '@gmail.com';
+        var password = 'jasmine_user_api_add' + Date.now();
+        var userAddFinished = false;
+        var userGetFinished = false;
+        var dulpEmailError = false;
+        var error;
+        var user;
+
+        // 添加新用户
+        runs(function(){
+            DB.user.add( email, password, function(){
+                userAddFinished = true;
+            });
+        });
+
+        // 等待添加操作完成
+        waitsFor(function(){
+            return userAddFinished;
+        }, '添加用户:' + email + ' 超时', waitsForTimeout );
+
+        runs(function(){
+            expect( userAddFinished ).toEqual( true );
+        });
+
+        // 重新从数据库中获取用户
+        runs(function(){
+            DB.user.get( email, function( u ){
+                user = u;
+                userGetFinished = true;
+            });
+        });
+
+        // 等待获取用户的操作完成
+        waitsFor( function(){
+            return userGetFinished;
+        }, '获取用户:' + email + '超时', waitsForTimeout );
+
+        runs(function(){
+            expect( user.email ).toEqual( email );
+            expect( user.password ).toEqual( password );
+            expect( user.sex ).toEqual( 'undefined' );
+        });
+
+        // 监听错误
+        runs(function(){
+            DB.user.on( '_error', function( _error ){
+                error = _error;
+                dulpEmailError = true;
+            });
+        });
+
+        // 再次添加用户
+        runs(function(){
+            DB.user.add( email, password );
+        });
+
+        waitsFor( function(){
+            return dulpEmailError;
+        }, '重复添加用户超时或者重复添加用户成功了:' + email, waitsForTimeout );
+
+        runs(function(){
+            // 错误事件被触发并且error对象存在
+            expect( dulpEmailError ).toEqual( true );
+            expect( typeof error ).not.toEqual( undefined );
+        });
+    });
 });

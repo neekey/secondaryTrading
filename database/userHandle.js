@@ -4,17 +4,21 @@
 require( './user' );
 
 var _ = require( 'underscore' ),
+    Util = require('util'),
     mongoose = require( 'mongoose' ),
     User = mongoose.model( 'user' ),
     EventEmitter = require('events').EventEmitter;
 
-    userOptions = [ 'sex', 'location', 'cellphone', 'qq', 'wangwang' ];
+var userOptions = [ 'sex', 'location', 'cellphone', 'qq', 'wangwang' ];
 
-userHandle = function(){
+var userHandle = function(){
 
     EventEmitter.call( this );
 };
-userHandle.prototype = {
+
+Util.inherits( userHandle, EventEmitter );
+
+_.extend( userHandle.prototype, {
 
     /**
      * 添加新用户
@@ -30,6 +34,8 @@ userHandle.prototype = {
      * @param next
      */
     add: function( email, password, options, next ){
+
+        var that = this;
 
         if( typeof options === 'function' ){
 
@@ -56,7 +62,8 @@ userHandle.prototype = {
 
         newUser.save( function( err ){
             if( err ){
-                return this.emit( 'error', err, 'user add failed!' );
+
+                return that.emit( '_error', err, 'user add failed!' );
             }
             else {
                 return next( newUser );
@@ -80,7 +87,8 @@ userHandle.prototype = {
             }
         });
     }
-};
+});
 
-module.exports = new userHandle;
+
+module.exports = new userHandle();
 
