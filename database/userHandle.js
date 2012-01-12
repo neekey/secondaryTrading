@@ -16,6 +16,19 @@ userHandle = function(){
 };
 userHandle.prototype = {
 
+    /**
+     * 添加新用户
+     * @param email
+     * @param password
+     * @param options {
+     *      sex:,
+     *      location,
+     *      qq:,
+     *      wangwang:,
+     *      cellphone:
+     * }
+     * @param next
+     */
     add: function( email, password, options, next ){
 
         if( typeof options === 'function' ){
@@ -46,7 +59,24 @@ userHandle.prototype = {
                 return this.emit( 'error', err, 'user add failed!' );
             }
             else {
-                return next();
+                return next( newUser );
+            }
+        });
+    },
+
+    /**
+     * 利用email来获取用户
+     * @param email
+     */
+    get: function( email, next ){
+
+        User.findOne( { email: email }, function( err, user ){
+
+            if( err ){
+                return this.emit( 'error', err, 'user with email:' + email + 'not found' );
+            }
+            else {
+                return next( user );
             }
         });
     }
