@@ -63,7 +63,7 @@ _.extend( userHandle.prototype, {
         newUser.save( function( err ){
             if( err ){
 
-                return that.emit( '_error', err, 'user add failed!' );
+                return that.emit( '_error', 'user add failed!', err  );
             }
             else {
                 return next( newUser );
@@ -90,5 +90,5 @@ _.extend( userHandle.prototype, {
 });
 
 
-module.exports = new userHandle();
+module.exports = userHandle;
 

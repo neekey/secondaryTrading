@@ -9,6 +9,8 @@ describe( '用户操作接口', function(){
 
     it( '添加用户(没有options)', function(){
 
+        var User = new DB.user();
+
         var email = 'jasmine_user_api_add' + Date.now() + '@gmail.com';
         var password = 'jasmine_user_api_add' + Date.now();
         var userAddFinished = false;
@@ -17,7 +19,7 @@ describe( '用户操作接口', function(){
 
         // 添加新用户
         runs(function(){
-            DB.user.add( email, password, function(){
+            User.add( email, password, function(){
                 userAddFinished = true;
             });
         });
@@ -33,7 +35,7 @@ describe( '用户操作接口', function(){
 
         // 重新从数据库中获取用户
         runs(function(){
-            DB.user.get( email, function( u ){
+            User.get( email, function( u ){
                 user = u;
                 userGetFinished = true;
             });
@@ -53,6 +55,8 @@ describe( '用户操作接口', function(){
 
     it( '添加用户(包含options)', function(){
 
+        var User = new DB.user();
+
         var email = 'jasmine_user_api_add_with_options' + Date.now() + '@gmail.com';
         var password = 'jasmine_user_api_add_with_options' + Date.now();
         var options = {
@@ -68,7 +72,7 @@ describe( '用户操作接口', function(){
 
         // 添加新用户
         runs(function(){
-            DB.user.add( email, password, options, function(){
+            User.add( email, password, options, function(){
                 userAddFinished = true;
             });
         });
@@ -84,7 +88,7 @@ describe( '用户操作接口', function(){
 
         // 重新从数据库中获取用户
         runs(function(){
-            DB.user.get( email, function( u ){
+            User.get( email, function( u ){
                 user = u;
                 userGetFinished = true;
             });
@@ -110,6 +114,8 @@ describe( '用户操作接口', function(){
 
     it( '重复（email）添加用户', function(){
 
+        var User = new DB.user();
+
         var email = 'jasmine_user_api_add' + Date.now() + '@gmail.com';
         var password = 'jasmine_user_api_add' + Date.now();
         var userAddFinished = false;
@@ -120,7 +126,7 @@ describe( '用户操作接口', function(){
 
         // 添加新用户
         runs(function(){
-            DB.user.add( email, password, function(){
+            User.add( email, password, function(){
                 userAddFinished = true;
             });
         });
@@ -136,7 +142,7 @@ describe( '用户操作接口', function(){
 
         // 重新从数据库中获取用户
         runs(function(){
-            DB.user.get( email, function( u ){
+            User.get( email, function( u ){
                 user = u;
                 userGetFinished = true;
             });
@@ -155,7 +161,7 @@ describe( '用户操作接口', function(){
 
         // 监听错误
         runs(function(){
-            DB.user.on( '_error', function( _error ){
+            User.on( '_error', function( _error ){
                 error = _error;
                 dulpEmailError = true;
             });
@@ -163,7 +169,7 @@ describe( '用户操作接口', function(){
 
         // 再次添加用户
         runs(function(){
-            DB.user.add( email, password );
+            User.add( email, password );
         });
 
         waitsFor( function(){

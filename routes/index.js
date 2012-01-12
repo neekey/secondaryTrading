@@ -3,8 +3,9 @@
  * GET home page.
  */
 
-var DB = require( '../database/' ),
-    API = require( '../api/api.js' );
+var DB = require( '../database/' );
+var API = require( '../api/api.js' );
+var Auth = require( '../auth/' );
 
 module.exports = {
     init: function( app ){
@@ -31,8 +32,39 @@ var Router ={
         type: 'get',
         rule: '/',
         fn: function(req, res){
-            // res.render('index', { title: 'Express' })
-            res.send( 'index' );
+
+            var auth = new Auth();
+
+            res.send( auth.ifLogin( req, res ) );
+        }
+    },
+
+    login: {
+        type: 'get',
+        rule: '/login',
+        fn: function( req, res ){
+
+            var auth = new Auth();
+
+            var data = req.query;
+            var email = data.email;
+            var password = data.password;
+            var options = data.options;
+
+            auth.on( '_error', function( msg, error ){
+                API.send( req, res, {
+                    result: false,
+                    type: 'login',
+                    error: msg
+                });
+            });
+
+            auth.login( req, res, email, password, function(){
+                API.send( req, res, {
+                    result: true,
+                    type: 'login'
+                });
+            });
         }
     },
 
@@ -41,13 +73,15 @@ var Router ={
         rule: '/register',
         fn: function( req, res ){
 
+            var User = new DB.user();
+
             var data = req.query;
             var email = data.email;
             var password = data.password;
             var options = data.options;
 
             // 监听抛出的错误
-            DB.user.on( '_error', function( error ){
+            User.on( '_error', function( msg, error ){
 
                 API.send( req, res, {
                     result: false,
@@ -58,7 +92,7 @@ var Router ={
             });
 
             // 添加用户
-            DB.user.add( email, password, options, function( user ){
+            User.add( email, password, options, function( user ){
 
                 API.send( req, res, {
                     result: true,
