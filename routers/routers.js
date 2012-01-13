@@ -1,31 +1,7 @@
-
-/*
- * GET home page.
- */
-
 var DB = require( '../database/' );
 var API = require( '../api/api.js' );
 var Auth = require( '../auth/' );
-
-module.exports = {
-    init: function( app ){
-
-        var rName, r, type, rule, handler;
-
-        for( rName in Router ){
-
-            r = Router[ rName ];
-            type = r.type;
-            rule = r.rule;
-            handler = r.fn;
-
-            if( typeof app[ type ] === 'function' ){
-
-                app[ type ]( rule, handler );
-            }
-        }
-    }
-};
+var _ = require( 'underscore' );
 
 var Router ={
     index: {
@@ -39,9 +15,13 @@ var Router ={
         }
     },
 
+    /**
+     * 用户登陆
+     */
     login: {
         type: 'get',
         rule: '/login',
+        middleware: [ 'shouldNotLogin' ],
         fn: function( req, res ){
 
             var auth = new Auth();
@@ -68,9 +48,60 @@ var Router ={
         }
     },
 
+    /**
+     * 注销
+     */
+    logout: {
+        type: 'get',
+        rule: '/logout',
+        middleware: [ 'shouldLogin' ],
+        fn: function( req, res ){
+            var auth = new Auth();
+
+            auth.logout( req, res );
+
+            API.send( req, res, {
+                result: true,
+                type: 'logout'
+            });
+        }
+    },
+
+    /**
+     * 检查用户是否已经登陆
+     */
+    checkAuth: {
+        type: 'get',
+        rule: '/checkauth',
+        fn: function( req, res ){
+            var auth = new Auth();
+
+            if( auth.ifLogin( req, res ) ){
+
+                API.send( req, res, {
+                    result: true,
+                    type: 'checkauth',
+                    data: true
+                });
+            }
+            else {
+
+                API.send( req, res, {
+                    result: true,
+                    type: 'checkauth',
+                    data: false
+                });
+            }
+        }
+    },
+
+    /**
+     * 注册新用户
+     */
     register: {
         type: 'get',
         rule: '/register',
+        middleware: [ 'shouldNotLogin' ],
         fn: function( req, res ){
 
             var User = new DB.user();
@@ -103,3 +134,5 @@ var Router ={
         }
     }
 };
+
+module.exports = Router;

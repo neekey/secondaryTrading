@@ -48,6 +48,12 @@ _.extend( Auth.prototype, {
         });
     },
 
+    /**
+     * 设置session
+     * @param req
+     * @param res
+     * @param email
+     */
     setSession: function( req, res, email ){
 
         req.session.email = email;
@@ -58,12 +64,21 @@ _.extend( Auth.prototype, {
         this.updateSession( req, res );
     },
 
+    /**
+     * 更新session（更新token）
+     * @param req
+     * @param res
+     */
     updateSession: function( req, res ){
 
         req.session.token = this.token();
         res.cookie( 'token', req.session.token );
     },
 
+    /**
+     * 检查是否已经登陆
+     * @param req
+     */
     ifLogin: function( req ){
         var Cookies = req.cookies;
         var email = Cookies.email;
@@ -81,6 +96,11 @@ _.extend( Auth.prototype, {
         }
     },
 
+    /**
+     * 用户注销登陆
+     * @param req
+     * @param res
+     */
     logout: function( req, res ){
         req.session.destroy();
         res.clearCookie( 'email', { path: CookiePath } );
@@ -94,6 +114,15 @@ _.extend( Auth.prototype, {
 
     serial: function(){
         return 'serial_' + Date.now();
+    },
+
+    getAuthInfo: function( req ){
+
+        return {
+            email: req.session.email,
+            serial: req.session.serial,
+            token: req.session.token
+        };
     }
 });
 
