@@ -77,10 +77,11 @@ _.extend( userHandle.prototype, {
      */
     get: function( email, next ){
 
+        var that = this;
         User.findOne( { email: email }, function( err, user ){
 
             if( err ){
-                return this.emit( 'error', err, 'user with email:' + email + 'not found' );
+                return that.emit( 'error', err, 'user with email:' + email + 'not found' );
             }
             else {
                 return next( user );
