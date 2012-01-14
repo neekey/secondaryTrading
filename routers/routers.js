@@ -117,7 +117,7 @@ var Router ={
                 API.send( req, res, {
                     result: false,
                     type: 'register',
-                    error: 'register failed',
+                    error: msg,
                     data: error
                 });
             });
