@@ -8,6 +8,7 @@ var DEFAULT_SESSION_EXPIRED = 30 * 60 * 1000;
 var SESSION_EXPIRED = DEFAULT_SESSION_EXPIRED;
 var SESSION_ID_PREFIX = 'secondaryTrading-';
 var SESSION_FIELD_NAME = 'secondary_trading_session_id';
+var RES_SESSION_FIELD_NAME = 'secondary_trading_session';
 var SESSION_UUID_COUNTER = 0;
 
 /**
@@ -22,6 +23,7 @@ var _SessionTimer = {
 var Session = {
 
     fieldId: SESSION_FIELD_NAME,
+    resFieldId: RES_SESSION_FIELD_NAME,
 
     setExpired: function( s ){
 
@@ -87,8 +89,10 @@ var Session = {
      */
     newSession: function( s ){
 
-        var id = this.uuid(),
-            that = this;
+        var id = this.uuid();
+        var that = this;
+        
+        s = s || {};
 
         _Session[ id ] = s;
 

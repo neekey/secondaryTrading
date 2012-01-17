@@ -7,8 +7,6 @@ var _ = require( 'underscore' );
 var EventEmitter = require('events').EventEmitter;
 var DB = require( '../database/' );
 
-var CookiePath = { path: CookiePath };
-
 var Auth = function(){
 
     EventEmitter.call( this );
@@ -56,11 +54,18 @@ _.extend( Auth.prototype, {
      */
     setSession: function( req, res, email ){
 
-        req.session.email = email;
-        req.session.serial = this.serial();
+        var instance = req.STSession;
 
-        res.cookie( 'email', email, { path: CookiePath } );
-        res.cookie( 'serial', req.session.serial );
+        var session = {
+            email: email,
+            serial: this.serial()
+        };
+
+        instance.set( session );
+
+        // 设置返回给客户端的session
+        res.RESSession = _.extend( res.RESSession, session );
+        
         this.updateSession( req, res );
     },
 
@@ -71,8 +76,10 @@ _.extend( Auth.prototype, {
      */
     updateSession: function( req, res ){
 
-        req.session.token = this.token();
-        res.cookie( 'token', req.session.token );
+        var instance = req.STSession;
+
+        instance.set( 'token', this.token() );
+        res.RESSession[ 'token' ] = instance.get( 'token' );
     },
 
     /**
@@ -80,14 +87,17 @@ _.extend( Auth.prototype, {
      * @param req
      */
     ifLogin: function( req ){
-        var Cookies = req.cookies;
-        var email = Cookies.email;
-        var serial = Cookies.serial;
-        var token = Cookies.token;
-        var sessions = req.session;
+
+        var resSession = req.RESSession;
+        var email = resSession.email;
+        var serial = resSession.serial;
+        var token = resSession.token;
+        var sessionInstance = req.STSession;
 
         if( email === undefined || serial === undefined || token === undefined ||
-            email !== sessions.email || serial !== sessions.serial || token !== sessions.token ){
+            email !== sessionInstance.get( 'email' ) ||
+            serial !== sessionInstance.get( 'serial' ) ||
+            token !== sessionInstance.get( 'token' ) ){
 
             return false;
         }
@@ -102,10 +112,11 @@ _.extend( Auth.prototype, {
      * @param res
      */
     logout: function( req, res ){
-        req.session.destroy();
-        res.clearCookie( 'email', { path: CookiePath } );
-        res.clearCookie( 'serial', { path: CookiePath } );
-        res.clearCookie( 'token', { path: CookiePath } );
+
+        req.STSession.destroy();
+        delete res.RESSession[ 'email' ];
+        delete res.RESSession[ 'serial' ];
+        delete res.RESSession[ 'token' ];
     },
 
     token: function(){
@@ -118,10 +129,12 @@ _.extend( Auth.prototype, {
 
     getAuthInfo: function( req ){
 
+        var instance = req.STSession;
+
         return {
-            email: req.session.email,
-            serial: req.session.serial,
-            token: req.session.token
+            email: instance.get( 'email' ),
+            serial: instance.get( 'serial' ),
+            token: instance.get( 'token' )
         };
     }
 });

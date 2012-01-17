@@ -26,13 +26,15 @@ module.exports = {
 
             if( typeof app[ type ] === 'function' ){
 
+                middlewareArr.push( MiddleWare[ 'sessionHandle' ] );
+
                 _.each( middleware, function( md ){
 
                     if( md in MiddleWare ){
                         middlewareArr.push( MiddleWare[ md ] );
                     }
                 });
-                
+
                 app[ type ]( rule, middlewareArr, handler );
             }
         }

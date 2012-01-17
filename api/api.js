@@ -1,6 +1,9 @@
 /**
  * 数据接口模块
  */
+
+var Session = require( '../session' );
+
 (function(){
 
     var apiConfig = require( './config' );
@@ -24,6 +27,9 @@
 
             var callback = req.query[ callbackName ];
             var data = this.buildApiData( resData.result, resData.type, resData.data, resData.error );
+
+            // 添加session数据
+            this.attachSessionData( req, res, data );
 
             if( callback ){
 
@@ -75,6 +81,14 @@
             resData.error = error;
 
             return resData;
+        },
+
+        // 附加session信息返回（ID）
+        attachSessionData: function( req, res, data ){
+
+            var instance = req.STSession;
+            data[ Session.fieldId ] = instance.id;
+            data[ Session.resFieldId ] = res.RESSession;
         }
     };
     
