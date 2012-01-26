@@ -63,7 +63,7 @@ _.extend( userHandle.prototype, {
         newUser.save( function( err ){
             if( err ){
 
-                return that.emit( '_error', 'user add failed!', err  );
+                return that.emit( '_error', '用户添加失败!', err  );
             }
             else {
                 return next( newUser );
@@ -81,7 +81,27 @@ _.extend( userHandle.prototype, {
         User.findOne( { email: email }, function( err, user ){
 
             if( err ){
-                return that.emit( 'error', err, 'user with email:' + email + 'not found' );
+                return that.emit( '_error', '无法找到email:' + email, err );
+            }
+            else {
+                return next( user );
+            }
+        });
+    },
+
+    /**
+     * 根据用户id获取用户
+     * @param id
+     * @param next
+     */
+    getById: function( id, next ){
+
+        var that = this;
+
+        User.findById( id, function( err, user ){
+
+            if( err ){
+                return that.emit( '_error', '无法找到id为:' + id + ' 的用户', err );
             }
             else {
                 return next( user );

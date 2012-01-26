@@ -182,4 +182,52 @@ describe( '用户操作接口', function(){
             expect( typeof error ).not.toEqual( undefined );
         });
     });
+
+    it( '根据id获取用户', function(){
+
+        var User = new DB.user();
+
+        var email = 'jasmine_user_api_add' + Date.now() + '@gmail.com';
+        var password = 'jasmine_user_api_add' + Date.now();
+        var userAddFinished = false;
+        var userGetFinished = false;
+        var user;
+        var userId;
+
+        // 添加新用户
+        runs(function(){
+            User.add( email, password, function( user ){
+                userAddFinished = true;
+                userId = user._id;
+            });
+        });
+
+        // 等待添加操作完成
+        waitsFor(function(){
+            return userAddFinished;
+        }, '添加用户:' + email + ' 超时', waitsForTimeout );
+
+        runs(function(){
+            expect( userAddFinished ).toEqual( true );
+        });
+
+        // 根据用户id重新从数据库中获取用户
+        runs(function(){
+            User.getById( userId, function( u ){
+                user = u;
+                userGetFinished = true;
+            });
+        });
+
+        // 等待获取用户的操作完成
+        waitsFor( function(){
+            return userGetFinished;
+        }, '获取用户:' + email + '超时', waitsForTimeout );
+
+        runs(function(){
+            expect( user.email ).toEqual( email );
+            expect( user.password ).toEqual( password );
+            expect( user.sex ).toEqual( 'undefined' );
+        });
+    });
 });
