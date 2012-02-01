@@ -3,7 +3,8 @@ require( './mongoConf' );
 module.exports = {
 
     user: require( './userHandle' ),
-    item: require( './itemHandle' )
+    item: require( './itemHandle' ),
+    image: require( './imageHandle' )
 };
 
 /*==== 规范 ====

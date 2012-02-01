@@ -1,19 +1,21 @@
 /**
- * db.item下的api，单元测试
+ * db.image下的api，单元测试
  */
 
 var DB = require( '../../database/' );
 var mongoose = require( 'mongoose' );
-var ITEM = mongoose.model( 'item' );
+var IMAGE = mongoose.model( 'image' );
 var waitsForTimeout = 5000;
 
-describe( '商品操作接口', function(){
+describe( '图片信息操作接口', function(){
 
     var newUser;
     var newUserId;
     var newItem;
     var newItemId;
-    var originItemObj;
+    var newImg;
+    var newImgId;
+    var originImgObj;
 
     it( '添加用于测试的新用户', function(){
 
@@ -43,14 +45,11 @@ describe( '商品操作接口', function(){
         });
     });
 
-    it( '添加商品', function(){
+    it( '添加用于测试的新商品', function(){
 
         var Item = new DB.item();
-        var itemObj = originItemObj = newItemObj( 'add' );
+        var itemObj = newItemObj( 'add' );
         var itemAddFinished = false;
-        var itemAddErr;
-        var itemAddErrMsg;
-        var getItemFinished = false;
 
         // 添加新商品
         runs( function(){
@@ -58,74 +57,104 @@ describe( '商品操作接口', function(){
             Item.add( newUserId, itemObj, function( i ){
 
                 itemAddFinished = true;
+                newItem = i;
                 newItemId = i._id;
             });
+        });
 
-            Item.on( '_error', function( msg, err ){
-
-                itemAddFinished = true;
-                itemAddErr = err;
-                itemAddErrMsg = msg;
-            });
-        })
-        
         waitsFor( function(){
 
             return itemAddFinished;
         }, '添加商品 超时', waitsForTimeout );
 
+        // 简单验证
+        runs( function(){
+
+            expect( typeof newItemId ).not.toEqual( 'undefined' );
+        });
+    });
+
+    it( '添加图片', function(){
+
+        var Img = new DB.image();
+        var imgObj = originImgObj = newImgObj( 'add' );
+        var imgAddFinished = false;
+        var imgAddErr;
+        var imgAddErrMsg;
+        var getImgFinished = false;
+
+        // 添加新商品
+        runs( function(){
+
+            Img.add( newItemId, imgObj, function( img ){
+
+                imgAddFinished = true;
+                newImgId = img._id;
+            });
+
+            Img.on( '_error', function( msg, err ){
+
+                imgAddFinished = true;
+                imgAddErr = err;
+                imgAddErrMsg = msg;
+            });
+        });
+
+        waitsFor( function(){
+
+            return imgAddFinished;
+        }, '添加图片 超时', waitsForTimeout );
+
         // 应该不会出现错误
         runs( function(){
 
-            expect( typeof itemAddErr ).toEqual( 'undefined' );
-            expect( typeof itemAddErrMsg ).toEqual( 'undefined' );
-            expect( typeof newItemId ).not.toEqual( 'undefined' );
+            expect( typeof imgAddErr ).toEqual( 'undefined' );
+            expect( typeof imgAddErrMsg ).toEqual( 'undefined' );
+            expect( typeof newImgId ).not.toEqual( 'undefined' );
         });
 
         // 根据id获取刚刚添加的商品
         runs( function(){
 
-            ITEM.findById( newItemId, function( err, item ){
+            IMAGE.findById( newImgId, function( err, img ){
 
-                getItemFinished = true;
-                newItem = item;
+                getImgFinished = true;
+                newImg = img;
             });
         });
 
         waitsFor( function(){
-            return getItemFinished;
-        }, '添加商品, 重新根据id获取 超时', waitsForTimeout);
+            return getImgFinished;
+        }, '添加图片, 重新根据id获取 超时', waitsForTimeout);
 
         // 验证添加的商品是否正确
         runs( function(){
 
-            expect( typeof newItem ).not.toEqual( 'undefined' );
-            expect( newItem.title ).toEqual( itemObj.title );
-            expect( newItem.price ).toEqual( itemObj.price );
-            expect( newItem.desc ).toEqual( itemObj.desc );
-            expect( newItem.location[ 0 ] ).toEqual( itemObj.location[ 0 ] );
-            expect( newItem.location[ 1 ] ).toEqual( itemObj.location[ 1 ] );
-
+            expect( typeof newImg ).not.toEqual( 'undefined' );
+            expect( newImg.path ).toEqual( imgObj.path );
+            expect( newImg.mime ).toEqual( imgObj.mime );
+            expect( newImg.type ).toEqual( imgObj.type );
+            expect( newImg.size ).toEqual( imgObj.size );
         });
     });
 
     it( 'getById', function(){
 
-        var Item = new DB.item();
+        var Img = new DB.image();
         var getFinished = false;
         var getErr;
         var getErrMsg;
-        var item;
+        var img;
 
         runs( function(){
 
-            Item.getById( newItemId, function( i ){
+            Img.getById( newImgId, function( i ){
 
                 getFinished = true;
-                item = i;
+                img = i;
             });
 
-            Item.on( '_error', function( msg, err ){
+            Img.on( '_error', function( msg, err ){
 
                 getErr = err;
                 getErrMsg = msg;
@@ -141,34 +170,33 @@ describe( '商品操作接口', function(){
 
             expect( typeof getErr ).toEqual( 'undefined' );
             expect( typeof getErrMsg ).toEqual( 'undefined' );
-            expect( typeof item ).not.toEqual( 'undefined' );
-            expect( item.title ).toEqual( originItemObj.title );
-            expect( item.price ).toEqual( originItemObj.price );
-            expect( item.desc ).toEqual( originItemObj.desc );
-            expect( item.location[ 0 ] ).toEqual( originItemObj.location[ 0 ] );
-            expect( item.location[ 1 ] ).toEqual( originItemObj.location[ 1 ] );
+            expect( typeof img ).not.toEqual( 'undefined' );
+            expect( img.path ).toEqual( originImgObj.path );
+            expect( img.mime ).toEqual( originImgObj.mime );
+            expect( img.type ).toEqual( originImgObj.type );
+            expect( img.size ).toEqual( originImgObj.size );
         });
 
         // 给定错误格式的id
         runs( function(){
 
-            item = undefined;
+            img = undefined;
             getFinished = false;
             getErr = undefined;
             getErrMsg = undefined;
 
             // 此处由于id格式错误，因此其实是同步的情况，如果on在后面，会出现没有捕获异常的情况
-            Item.on( '_error', function( msg, err ){
+            Img.on( '_error', function( msg, err ){
 
                 getFinished = true;
                 getErr = err;
                 getErrMsg = msg;
             });
 
-            Item.getById( newItemId + Date.now(), function( i ){
+            Img.getById( newImgId + Date.now(), function( i ){
 
                 getFinished = true;
-                item = i;
+                img = i;
             });
         });
 
@@ -181,31 +209,30 @@ describe( '商品操作接口', function(){
 
             expect( typeof getErr ).not.toEqual( 'undefined' );
             expect( typeof getErrMsg ).not.toEqual( 'undefined' );
-            expect( typeof item ).toEqual( 'undefined' );
+            expect( typeof img ).toEqual( 'undefined' );
         });
     });
 
-    it( 'update商品', function(){
+    it( 'update图片', function(){
 
-        var Item = new DB.item();
-        var updateItem = newItemObj( 'update' );
+        var Img = new DB.image();
+        var updateImg = newImgObj( 'update' );
         var updateFinished = false;
-        var getItemFinished = false;
-        var item;
+        var getImgFinished = false;
+        var img;
 
         // 验证修改后的和旧的不一样
         runs( function(){
-            
-            expect( updateItem.title ).not.toEqual( originItemObj.title );
-            expect( updateItem.price ).not.toEqual( originItemObj.price );
-            expect( updateItem.desc ).not.toEqual( originItemObj.desc );
-            expect( updateItem.location[ 0 ] ).not.toEqual( originItemObj.location[ 0 ] );
-            expect( updateItem.location[ 1 ] ).not.toEqual( originItemObj.location[ 1 ] );
+
+            expect( updateImg.path ).not.toEqual( originImgObj.path );
+            expect( updateImg.mime ).not.toEqual( originImgObj.mime );
+            expect( updateImg.type ).not.toEqual( originImgObj.type );
+            expect( updateImg.size ).not.toEqual( originImgObj.size );
         });
 
         runs( function(){
 
-            Item.update( newItemId, updateItem, function( ui ){
+            Img.update( newImgId, updateImg, function( ui ){
 
                 updateFinished = true;
             });
@@ -213,37 +240,36 @@ describe( '商品操作接口', function(){
 
         waitsFor( function(){
             return updateFinished;
-        }, 'update商品超时', waitsForTimeout );
+        }, 'update图片超时', waitsForTimeout );
 
         // 从新从数据库中获取
         runs(function(){
 
-            Item.getById( newItemId, function( i ){
+            Img.getById( newImgId, function( i ){
 
-                getItemFinished = true;
-                item = i;
+                getImgFinished = true;
+                img = i;
             });
         });
 
         waitsFor( function(){
 
-            return getItemFinished;
+            return getImgFinished;
         }, '重新获取商品数据超时', waitsForTimeout );
 
         runs( function(){
-            
-            expect( typeof item ).not.toEqual( 'undefined' );
-            expect( item.title ).toEqual( updateItem.title );
-            expect( item.price ).toEqual( updateItem.price );
-            expect( item.desc ).toEqual( updateItem.desc );
-            expect( item.location[ 0 ] ).toEqual( updateItem.location[ 0 ] );
-            expect( item.location[ 1 ] ).toEqual( updateItem.location[ 1 ] );
+
+            expect( typeof img ).not.toEqual( 'undefined' );
+            expect( img.path ).toEqual( updateImg.path );
+            expect( img.mime ).toEqual( updateImg.mime );
+            expect( img.type ).toEqual( updateImg.type );
+            expect( img.size ).toEqual( updateImg.size );
         });
     });
 
-    it( '删除商品', function(){
+    it( '删除图片', function(){
 
-        var Item = new DB.item();
+        var Img = new DB.image();
         var delFinished = false;
         var getFinished = false;
         var getErr;
@@ -251,7 +277,7 @@ describe( '商品操作接口', function(){
 
         runs( function(){
 
-            Item.del( newItemId, function(){
+            Img.del( newImgId, function(){
 
                 delFinished = true;
             });
@@ -260,19 +286,19 @@ describe( '商品操作接口', function(){
         waitsFor( function(){
 
             return delFinished;
-        }, '删除商品超时', waitsForTimeout );
+        }, '删除图片超时', waitsForTimeout );
 
-        // 重新查找该商品，验证已经删除
+        // 重新查找该图片，验证已经删除
         runs( function(){
 
-            Item.on( '_error', function( msg, err ){
+            Img.on( '_error', function( msg, err ){
 
                 getErr = err;
                 getErrMsg = msg;
                 getFinished = true;
             });
 
-            Item.getById( newItemId, function( i ){
+            Img.getById( newImgId, function( i ){
 
                 getFinished = true;
             });
@@ -280,7 +306,7 @@ describe( '商品操作接口', function(){
 
         waitsFor( function(){
             return getFinished;
-        }, '获取商品超时', waitsForTimeout );
+        }, '获取图片超时', waitsForTimeout );
 
         runs( function(){
 
@@ -294,6 +320,18 @@ describe( '商品操作接口', function(){
  * 返回唯一的用户生成新item的配置对象
  * @param apiType
  */
+function newImgObj( apiType ){
+
+    var imgObj = {
+        path: 'jasmine_img_api_' + apiType + Date.now() + '_path',
+        mime: 'image/' + Date.now(),
+        type: 'jasmine_img_api_' + apiType + Date.now() + '_type',
+        size: Date.now()
+    };
+
+    return imgObj;
+}
+
 function newItemObj( apiType ){
 
     var itemObj = {

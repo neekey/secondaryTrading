@@ -63,6 +63,7 @@ _.extend( itemHandle.prototype, {
      * @param query
      * @param fields
      * @param next
+     * //todo 添加单元测试
      */
     query: function( query, next ){
 
@@ -93,7 +94,7 @@ _.extend( itemHandle.prototype, {
         Item.findById( id, function( err, item ){
 
             if( err ){
-                return that.emit( '_error', 'id格式有误:' + id, err );
+                return that.emit( '_error', '查找出错，id:' + id, err );
             }
             else {
 
