@@ -2,6 +2,8 @@ var DB = require( '../database/' );
 var API = require( '../api/api.js' );
 var Auth = require( '../auth/' );
 var _ = require( 'underscore' );
+var FS = require( 'fs' );
+var MIME = require( '../mime' );
 
 var Router ={
     index: {
@@ -130,6 +132,51 @@ var Router ={
                     type: 'register',
                     data: user
                 });
+            });
+        }
+    },
+
+    newItem: {
+        type: 'post',
+        rule: '/newItem',
+        fn: function ( req, res ){
+
+            var body = req.body;
+
+            var title = body.title;
+            var desc = body.desc;
+            var price = body.price;
+            var pic1 = body.pic1;
+            var pic2 = body.pic2;
+            var pic3 = body.pic3;
+        }
+    },
+
+    /**
+     * 文件上传
+     */
+    imageUpload: {
+        type: 'post',
+        rule: '/imageupload',
+        // middleware: [ 'shouldLogin' ]
+        fn: function( req, res ){
+            
+            var image = req.files.image;
+
+//            image.length;
+//            image.filename;
+//            image.mime;
+//            image.path;
+
+            FS.rename( image.path, 'uploads/' + image.filename + '.jpg', function( err ){
+
+                if( err ){
+                    console.log( '重命名出错' );
+                    console.log( err );
+                }
+                else {
+                    console.log( '重命名成功' );
+                }
             });
         }
     }
