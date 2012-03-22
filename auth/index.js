@@ -94,16 +94,10 @@ _.extend( Auth.prototype, {
         var token = resSession.token;
         var sessionInstance = req.STSession;
 
-        if( email === undefined || serial === undefined || token === undefined ||
-            email !== sessionInstance.get( 'email' ) ||
-            serial !== sessionInstance.get( 'serial' ) ||
-            token !== sessionInstance.get( 'token' ) ){
-
-            return false;
-        }
-        else {
-            return true;
-        }
+        return !(email === undefined || serial === undefined || token === undefined ||
+            email !== sessionInstance.get('email') ||
+            serial !== sessionInstance.get('serial') ||
+            token !== sessionInstance.get('token'));
     },
 
     /**

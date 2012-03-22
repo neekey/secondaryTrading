@@ -3,6 +3,7 @@
  */
 
 var Session = require( '../session' );
+var Auth = require( '../auth' );
 
 (function(){
 
@@ -26,7 +27,7 @@ var Session = require( '../session' );
         send: function( req, res, resData ){
 
             var callback = req.query[ callbackName ];
-            var data = this.buildApiData( resData.result, resData.type, resData.data, resData.error );
+            var data = this.buildApiData( req, resData.result, resData.type, resData.data, resData.error );
 
             // 添加session数据
             this.attachSessionData( req, res, data );
@@ -69,16 +70,20 @@ var Session = require( '../session' );
          * @param data
          * @param error
          */
-        buildApiData: function( result, type, data, error ){
+        buildApiData: function( req, result, type, data, error ){
 
             var commonRes = apiConfig.commonRes;
 
             var resData = _.defaults( {}, commonRes );
+            var auth = new Auth();
 
             resData.result = result;
             resData.type = type;
             resData.data = data;
             resData.error = error;
+
+            // 附加login参数，用来表明该请求收到时是否已经登陆（而不是在向浏览器响应时是否登陆）
+            resData.login = auth.ifLogin( req );
 
             return resData;
         },
