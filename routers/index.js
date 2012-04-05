@@ -27,6 +27,7 @@ module.exports = {
             if( typeof app[ type ] === 'function' ){
 
                 middlewareArr.push( MiddleWare[ 'sessionHandle' ] );
+                middlewareArr.push( MiddleWare[ 'ifLogin' ] );
 
                 _.each( middleware, function( md ){
 

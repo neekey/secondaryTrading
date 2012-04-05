@@ -14,9 +14,9 @@ var MiddleWare = {
         var auth = new Auth();
         var authInfo;
 
-        if( auth.ifLogin( req ) ){
+        if( req.ifLogin ){
 
-            var authInfo = auth.getAuthInfo( req );
+            authInfo = auth.getAuthInfo( req );
 
             API.send( req, res, {
                 result: false,
@@ -31,9 +31,7 @@ var MiddleWare = {
 
     shouldLogin: function( req, res, next ){
 
-        var auth = new Auth();
-
-        if( !auth.ifLogin( req ) ){
+        if( !req.ifLogin ){
 
             API.send( req, res, {
                 result: false,
@@ -44,6 +42,15 @@ var MiddleWare = {
         else {
             next();
         }
+    },
+
+    ifLogin: function ( req, res, next ){
+
+        var auth = new Auth();
+
+        req.ifLogin = auth.ifLogin( req );
+
+        next();
     },
 
     /**
@@ -96,6 +103,10 @@ var MiddleWare = {
 
         // 设置session数据
         resSession = resSession || {};
+
+        // 这里 STSession是根据client给定的session id 从server中对应的保存的session信息
+        // RESSession则是client自己储存的session信息
+        // 两者用于相关的操作中的比较等
 
         req.RESSession = _.clone( resSession );
         res.RESSession = _.clone( resSession );

@@ -83,7 +83,7 @@ var Auth = require( '../auth' );
             resData.error = error;
 
             // 附加login参数，用来表明该请求收到时是否已经登陆（而不是在向浏览器响应时是否登陆）
-            resData.login = auth.ifLogin( req );
+            resData.login = req.ifLogin;
 
             return resData;
         },
