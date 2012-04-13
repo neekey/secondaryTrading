@@ -12,6 +12,7 @@ var Item = new schema({
     price: { type: Number, required: true },
     desc: { type: String, required: true },
     location: [ Number ],
+    address: { type: String },
     postDate: { type: Date }
 });
 

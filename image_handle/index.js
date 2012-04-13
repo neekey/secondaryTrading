@@ -2,8 +2,9 @@
  * 处理与图片上传相关的逻辑
  */
 
-var MIME = require( '../mime' );
+var MIME = require( 'gettype' );
 var FS = require( 'fs' );
+var Base64 = require( 'base64js' );
 var UTIL = require( 'util' );
 var _ = require( 'underscore' );
 var M = 1024 * 1024;
@@ -19,6 +20,55 @@ var upload = {
     setMaxSize: function( maxSize ){
 
         MAX_SIZE = maxSize;
+    },
+
+    /**
+     * 将base64字符串转化为二进制文件
+     * @param base64String
+     * @param path
+     * @param next
+     */
+    base64Decode: function ( base64String, path, next ){
+
+        Base64.decode( base64String, path, next );
+    },
+
+    base64Encode: function ( path, next ){
+
+        Base64.encode( path, next );
+    },
+
+    /**
+     * 返回一个随即的tmp路径
+     * @return {String}
+     */
+    tmpPath: function (){
+        var x = Math.floor(Math.random() * Math.pow(16,4)).toString(16);
+        var y = Math.floor(Math.random() * Math.pow(16,4)).toString(16);
+        var z = Math.floor(Math.random() * Math.pow(16,4)).toString(16);
+
+        return '/tmp/' + [x,y,z].join('_');
+    },
+
+    /**
+     * 将指定的base64字符串临时保存
+     * @param base64String
+     * @param next( err, tmpPath )
+     */
+    base64TmpSave: function ( base64String, next ){
+
+        var tmpPath = this.tmpPath();
+
+        this.base64Decode( base64String, tmpPath, function ( err ){
+
+            if( err ){
+                next( err );
+            }
+            else {
+                next( undefined, tmpPath );
+            }
+        });
+
     },
 
     /**
@@ -73,6 +123,31 @@ var upload = {
 
                     next( undefined, true );
                 }
+            }
+        });
+    },
+
+    /**
+     * 检查base64字符串的类型和大小是否正常
+     * @param base64String
+     * @param next
+     */
+    base64Check: function ( base64String, next ){
+
+        var that = this;
+
+        this.base64TmpSave( base64String, function ( err, path ){
+
+            if( err ){
+
+                next( err );
+            }
+            else {
+
+                that.check( path, function ( err, ifValid, imgType ){
+
+                    next( err, path, ifValid, imgType );
+                });
             }
         });
     },
@@ -141,6 +216,25 @@ var upload = {
             else {
 
                 next( null, stats );
+            }
+        });
+    },
+
+    /**
+     * 将图片进行另存为
+     * @param oldPath
+     * @param newPath
+     * @param next
+     */
+    saveAs: function ( oldPath, newPath, next ){
+
+        FS.rename( oldPath, newPath, function( err ){
+
+            if( err ){
+                next( err );
+            }
+            else {
+                next();
             }
         });
     }

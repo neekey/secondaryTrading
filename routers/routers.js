@@ -141,11 +141,14 @@ var Router ={
         rule: '/newItem',
         fn: function ( req, res ){
 
+            var newImage = new DB.image();
             var body = req.body;
 
             var title = body.title;
             var desc = body.desc;
             var price = body.price;
+            var latlng = body.latlng;
+            var address = body.address;
             var pic1 = body.pic1;
             var pic2 = body.pic2;
             var pic3 = body.pic3;
