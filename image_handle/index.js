@@ -9,7 +9,7 @@ var UTIL = require( 'util' );
 var _ = require( 'underscore' );
 var M = 1024 * 1024;
 var MAX_SIZE = 1 * M;
-var ValidType = [ 'jpeg', 'png', 'gif', 'bmp' ];
+var ValidType = [ 'jpeg', 'jpg', 'png', 'gif', 'bmp' ];
 
 var upload = {
 
@@ -74,11 +74,11 @@ var upload = {
     /**
      * 检查图片格式是否合法
      * @param path
-     * @param next
+     * @param next( err, ifValid, type, mimeType )
      */
     typeCheck: function( path, next ){
 
-        MIME.parse( path, function( err, type ){
+        MIME.parse( path, function( err, type, mimeType ){
 
             var typeIndex;
 
@@ -90,7 +90,7 @@ var upload = {
 
                 if( _.indexOf( ValidType, type ) >= 0 ){
 
-                    next( undefined, true, type );
+                    next( undefined, true, type, mimeType );
                 }
                 else {
 
@@ -103,7 +103,7 @@ var upload = {
     /**
      * 检查文件大小是否合法
      * @param path
-     * @param next
+     * @param next( err, ifValid, size )
      */
     sizeCheck: function( path, next ){
 
@@ -121,7 +121,7 @@ var upload = {
                 }
                 else {
 
-                    next( undefined, true );
+                    next( undefined, true, stats.size );
                 }
             }
         });
@@ -130,7 +130,7 @@ var upload = {
     /**
      * 检查base64字符串的类型和大小是否正常
      * @param base64String
-     * @param next
+     * @param next( err, path, ifValid, imgInfo )
      */
     base64Check: function ( base64String, next ){
 
@@ -144,9 +144,9 @@ var upload = {
             }
             else {
 
-                that.check( path, function ( err, ifValid, imgType ){
+                that.check( path, function ( err, result, imgInfo ){
 
-                    next( err, path, ifValid, imgType );
+                    next( err, path, result, imgInfo );
                 });
             }
         });
@@ -155,14 +155,14 @@ var upload = {
     /**
      * 检查上传的图片是否合法（大小和图片类型）
      * @param path
-     * @param next ( err, ifValid, imgType )
+     * @param next ( err, ifValid, imgInfo )
      */
     check: function( path, next ){
 
         var that = this;
 
         // 先检查文件类型
-        this.typeCheck( path, function( err, valid, type ){
+        this.typeCheck( path, function( err, valid, type, mimeType ){
 
             if( err ){
 
@@ -173,7 +173,7 @@ var upload = {
                 if( valid ){
 
                     // 检查文件大小
-                    that.sizeCheck( path, function( err, result ){
+                    that.sizeCheck( path, function( err, result, size ){
 
                         if( err ){
 
@@ -183,7 +183,19 @@ var upload = {
 
                             if( result ){
 
-                                next( undefined, true, type );
+                                console.log( {
+                                    path: path,
+                                    type: type,
+                                    size: size,
+                                    mimeType: mimeType
+                                });
+
+                                next( undefined, true, {
+                                    path: path,
+                                    type: type,
+                                    size: size,
+                                    mimeType: mimeType
+                                });
                             }
                             else {
 

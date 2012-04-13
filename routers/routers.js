@@ -3,8 +3,7 @@ var API = require( '../api/api.js' );
 var Auth = require( '../auth/' );
 var _ = require( 'underscore' );
 var FS = require( 'fs' );
-var MIME = require( '../mime' );
-
+var IMG = require( '../image_handle' );
 var Router ={
     index: {
         type: 'get',
@@ -141,7 +140,8 @@ var Router ={
         rule: '/newItem',
         fn: function ( req, res ){
 
-            var newImage = new DB.image();
+            var newImg = new DB.image();
+            var newItem = new DB.item();
             var body = req.body;
 
             var title = body.title;
@@ -149,9 +149,150 @@ var Router ={
             var price = body.price;
             var latlng = body.latlng;
             var address = body.address;
-            var pic1 = body.pic1;
-            var pic2 = body.pic2;
-            var pic3 = body.pic3;
+            var pics = [];
+
+            var i, dataString, ifError = false, picCheckCount = 0;
+
+            newImg.on( '_error', function( msg, error ){
+
+                API.send( req, res, {
+                    result: false,
+                    type: 'newItem',
+                    error: msg,
+                    data: error
+                });
+            });
+
+            newItem.on( '_error', function( msg, error ){
+
+                API.send( req, res, {
+                    result: false,
+                    type: 'newItem',
+                    error: msg,
+                    data: error
+                });
+            });
+
+            // 检查图片
+            for( i = 1; i <= 3; i++ ){
+
+                if( dataString = body[ 'pic' + i ] ){
+
+                    (function( index, ds ){
+                        IMG.base64Check( ds, function ( err, path, ifValid, imgInfo ){
+
+                            if( err ){
+
+                                if( !ifError ){
+                                    API.send( req, res, {
+                                        result: false,
+                                        type: 'newItem',
+                                        error: 'error when checking image!',
+                                        data: err
+                                    });
+
+                                    ifError = true;
+                                }
+                            }
+                            else {
+
+                                picCheckCount++;
+
+                                if( ifValid ){
+
+                                    var newPath = 'uploads/' + path.substring( 5 ) + '.' + imgInfo.type;
+
+                                    IMG.saveAs( path, newPath, function ( err ){
+
+                                        if( err ){
+
+                                            if( !ifError ){
+                                                API.send( req, res, {
+                                                    result: false,
+                                                    type: 'newItem',
+                                                    error: 'error when saving image!',
+                                                    data: err
+                                                });
+
+                                                ifError = true;
+                                            }
+                                        }
+                                        else {
+
+                                            pics[ index ] = {
+                                                path: newPath,
+                                                type: imgInfo.type,
+                                                mime: imgInfo.mimeType,
+                                                size: imgInfo.size
+                                            };
+
+                                            if( picCheckCount === 3 ){
+
+                                                addItem( function ( itemId ){
+
+                                                    API.send( req, res, {
+                                                        result: true,
+                                                        type: 'newItem',
+                                                        data: {
+                                                            itemId: itemId
+                                                        }
+                                                    });
+                                                });
+                                            }
+                                        }
+                                    });
+
+                                }
+                            }
+                        });
+                    })( i, dataString );
+
+                }
+            }
+
+            function addItem( next ){
+
+                var userInfo = Auth.getAuthInfo();
+                var userId = userInfo.id;
+                var count = 0;
+
+                newItem.add( userId, {
+                    title: title,
+                    desc: desc,
+                    price: price,
+                    location: latlng.split( ',' ),
+                    address: address
+                }, function ( newItem ){
+
+                    var itemId = newItem.id;
+
+                    pics.forEach(function ( pic ){
+
+                        if( pic ){
+                            newImg.add( itemId, pic, function ( newImg ){
+
+                                count++;
+
+                                if( count === pics.length ){
+
+                                    next( itemId );
+                                }
+                            });
+                        }
+                        else {
+
+                            count++;
+
+                            if( count === pics.length ){
+
+                                next( itemId );
+                            }
+                        }
+
+                    });
+                })
+
+            }
         }
     },
 

@@ -29,10 +29,10 @@ describe( '图片类型和大小验证', function(){
         var tmpPath;
 
         runs(function(){
-            Upload.check( SIZE_FORMAT_PATH, function( err, valid, type ){
+            Upload.check( SIZE_FORMAT_PATH, function( err, valid, imgInfo ){
                 e = err;
                 v = valid;
-                t = type;
+                t = valid ? imgInfo.type : imgInfo;
             });
         });
 
@@ -58,11 +58,11 @@ describe( '图片类型和大小验证', function(){
             // 先转化为base64字符串
             Upload.base64Encode( SIZE_FORMAT_PATH, function ( err, ds ){
 
-                Upload.base64Check( ds, function ( err, path, valid, type ){
+                Upload.base64Check( ds, function ( err, path, valid, imgInfo ){
 
                     e = err;
                     v = valid;
-                    t = type;
+                    t = valid ? imgInfo.type : imgInfo;
                     tmpPath = path;
                 });
 
@@ -88,12 +88,16 @@ describe( '图片类型和大小验证', function(){
         var v;
         var t;
         var e;
+        var tmpPath;
 
         runs(function(){
-            Upload.check( SIZE_NO_FORMAT_PATH, function( err, valid, type ){
+            Upload.check( SIZE_NO_FORMAT_PATH, function( err, valid, imgInfo ){
+
                 e = err;
                 v = valid;
-                t = type;
+                t = valid ? imgInfo.type : imgInfo;
+                console.log( 'SIZE_NO_FORMAT_PATH', imgInfo, valid, t ) ;
+
             });
         });
 
@@ -119,11 +123,11 @@ describe( '图片类型和大小验证', function(){
             // 先转化为base64字符串
             Upload.base64Encode( SIZE_NO_FORMAT_PATH, function ( err, ds ){
 
-                Upload.base64Check( ds, function ( err, path, valid, type ){
+                Upload.base64Check( ds, function ( err, path, valid, imgInfo ){
 
                     e = err;
                     v = valid;
-                    t = type;
+                    t = valid ? imgInfo.type : imgInfo;
                     tmpPath = path;
                 });
 
@@ -149,12 +153,15 @@ describe( '图片类型和大小验证', function(){
         var v;
         var t;
         var e;
+        var tmpPath;
 
         runs(function(){
-            Upload.check( NO_SIZE_FORMAT_PATH, function( err, valid, type ){
+            Upload.check( NO_SIZE_FORMAT_PATH, function( err, valid, imgInfo ){
+
+                console.log( arguments );
                 e = err;
                 v = valid;
-                t = type;
+                t = valid ? imgInfo.type : imgInfo;
             });
         });
 
@@ -180,11 +187,11 @@ describe( '图片类型和大小验证', function(){
             // 先转化为base64字符串
             Upload.base64Encode( NO_SIZE_FORMAT_PATH, function ( err, ds ){
 
-                Upload.base64Check( ds, function ( err, path, valid, type ){
+                Upload.base64Check( ds, function ( err, path, valid, imgInfo ){
 
                     e = err;
                     v = valid;
-                    t = type;
+                    t = valid ? imgInfo.type : imgInfo;
                     tmpPath = path;
                 });
 
@@ -210,12 +217,13 @@ describe( '图片类型和大小验证', function(){
         var v;
         var t;
         var e;
+        var tmpPath;
 
         runs(function(){
-            Upload.check( NO_SIZE_NO_FORMAT_PATH, function( err, valid, type ){
+            Upload.check( NO_SIZE_NO_FORMAT_PATH, function( err, valid, imgInfo ){
                 e = err;
                 v = valid;
-                t = type;
+                t = valid ? imgInfo.type : imgInfo;
             });
         });
 
@@ -241,11 +249,11 @@ describe( '图片类型和大小验证', function(){
             // 先转化为base64字符串
             Upload.base64Encode( NO_SIZE_NO_FORMAT_PATH, function ( err, ds ){
 
-                Upload.base64Check( ds, function ( err, path, valid, type ){
+                Upload.base64Check( ds, function ( err, path, valid, imgInfo ){
 
                     e = err;
                     v = valid;
-                    t = type;
+                    t = valid ? imgInfo.type : imgInfo;
                     tmpPath = path;
                 });
 

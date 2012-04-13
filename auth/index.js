@@ -40,7 +40,7 @@ _.extend( Auth.prototype, {
             }
             else {
 
-                that.setSession( req, res, email );
+                that.setSession( req, res, email, user.id );
                 next();
             }
         });
@@ -52,7 +52,7 @@ _.extend( Auth.prototype, {
      * @param res
      * @param email
      */
-    setSession: function( req, res, email ){
+    setSession: function( req, res, email, id ){
 
         var instance = req.STSession;
 
@@ -61,11 +61,14 @@ _.extend( Auth.prototype, {
             serial: this.serial()
         };
 
-        instance.set( session );
-
         // 设置返回给客户端的session
         res.RESSession = _.extend( res.RESSession, session );
-        
+
+        // 在服务器session中保存用户id
+        session.id = id;
+
+        instance.set( session );
+
         this.updateSession( req, res );
     },
 
@@ -126,6 +129,7 @@ _.extend( Auth.prototype, {
         var instance = req.STSession;
 
         return {
+            id: instance.get( 'id' ),
             email: instance.get( 'email' ),
             serial: instance.get( 'serial' ),
             token: instance.get( 'token' )

@@ -33,7 +33,8 @@ _.extend( itemHandle.prototype, {
                 title: itemObj.title,
                 price: itemObj.price,
                 desc: itemObj.desc,
-                location: itemObj.location
+                location: itemObj.location,
+                address: itemObj.address
             };
 
             newItem = new Item( newItemModle );
