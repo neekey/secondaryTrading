@@ -141,6 +141,7 @@ var Router ={
 
     /**
      * 添加新商品
+     * todo 删除调试用的console
      */
     newItem: {
         type: 'post',
@@ -152,6 +153,8 @@ var Router ={
             var newImg = new DB.image();
             var newItem = new DB.item();
             var body = req.body;
+            var auth = new Auth();
+            var userInfo = auth.getAuthInfo( req );
 
             console.log( 'body:', body );
 
@@ -216,8 +219,7 @@ var Router ={
                                 if( ifValid ){
 
                                     // 图片的保存地址
-                                    // todo 增加时间戳和用户信息
-                                    var newPath = 'uploads/' + path.substring( 5 ) + '.' + imgInfo.type;
+                                    var newPath = 'uploads/' + userInfo.id + '_' + path.substring( 5 ) + Date.now() + '.' + imgInfo.type;
 
                                     // 图片另存为
                                     IMG.saveAs( path, newPath, function ( err ){
@@ -290,8 +292,7 @@ var Router ={
             function addItem(){
 
                 console.log( 'addItem' );
-                var auth = new Auth();
-                var userInfo = auth.getAuthInfo( req );
+
                 var userId = userInfo.id;
                 var count = 0;
                 var i, pic;
