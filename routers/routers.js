@@ -16,6 +16,10 @@ var Router ={
         }
     },
 
+    // 用于为客户端部分文件建立静态服务器
+    // 在同目录下，同域名下，解决在浏览器端调试的跨域问题
+    clientStatic: require( './clientStatic').clientStatic,
+
     /**
      * 用户登陆
      */
@@ -135,18 +139,25 @@ var Router ={
         }
     },
 
+    /**
+     * 添加新商品
+     */
     newItem: {
         type: 'post',
         rule: '/newItem',
+        middleware: [ 'shouldLogin' ],
         fn: function ( req, res ){
 
+            console.log( 'begin newItem' );
             var newImg = new DB.image();
             var newItem = new DB.item();
             var body = req.body;
 
+            console.log( 'body:', body );
+
             var title = body.title;
             var desc = body.desc;
-            var price = body.price;
+            var price = parseFloat( body.price ) || 0;
             var latlng = body.latlng;
             var address = body.address;
             var pics = [];
@@ -179,43 +190,56 @@ var Router ={
                 if( dataString = body[ 'pic' + i ] ){
 
                     (function( index, ds ){
+
+                        // 检查
                         IMG.base64Check( ds, function ( err, path, ifValid, imgInfo ){
+
+                            // 若已经出现过错误，则后面的都不处理
+                            if( ifError ){
+                                return;
+                            }
 
                             if( err ){
 
-                                if( !ifError ){
-                                    API.send( req, res, {
-                                        result: false,
-                                        type: 'newItem',
-                                        error: 'error when checking image!',
-                                        data: err
-                                    });
+                                API.send( req, res, {
+                                    result: false,
+                                    type: 'newItem',
+                                    error: 'error when checking image!',
+                                    data: err
+                                });
 
-                                    ifError = true;
-                                }
+                                ifError = true;
                             }
                             else {
 
-                                picCheckCount++;
-
+                                // 若验证通过
                                 if( ifValid ){
 
+                                    // 图片的保存地址
+                                    // todo 增加时间戳和用户信息
                                     var newPath = 'uploads/' + path.substring( 5 ) + '.' + imgInfo.type;
 
+                                    // 图片另存为
                                     IMG.saveAs( path, newPath, function ( err ){
+
+                                        if( ifError ){
+
+                                            return;
+                                        }
+
+                                        picCheckCount++;
 
                                         if( err ){
 
-                                            if( !ifError ){
-                                                API.send( req, res, {
-                                                    result: false,
-                                                    type: 'newItem',
-                                                    error: 'error when saving image!',
-                                                    data: err
-                                                });
+                                            API.send( req, res, {
+                                                result: false,
+                                                type: 'newItem',
+                                                error: 'error when saving image!',
+                                                data: err
+                                            });
 
-                                                ifError = true;
-                                            }
+                                            ifError = true;
+
                                         }
                                         else {
 
@@ -228,34 +252,51 @@ var Router ={
 
                                             if( picCheckCount === 3 ){
 
-                                                addItem( function ( itemId ){
-
-                                                    API.send( req, res, {
-                                                        result: true,
-                                                        type: 'newItem',
-                                                        data: {
-                                                            itemId: itemId
-                                                        }
-                                                    });
-                                                });
+                                                console.log( 'before additem' );
+                                                addItem();
                                             }
                                         }
                                     });
 
                                 }
+                                else {
+
+                                    picCheckCount++;
+
+                                    if( picCheckCount === 3 ){
+
+                                        console.log( 'before additem' );
+                                        addItem();
+                                    }
+                                }
                             }
                         });
                     })( i, dataString );
-
                 }
+                else {
+
+                    picCheckCount++;
+
+                    console.log( 'empty pic' + i, ' count:' + picCheckCount );
+                    if( picCheckCount === 3 ){
+
+                        addItem();
+                    }
+                }
+
             }
 
-            function addItem( next ){
+            // 添加新商品
+            function addItem(){
 
-                var userInfo = Auth.getAuthInfo();
+                console.log( 'addItem' );
+                var auth = new Auth();
+                var userInfo = auth.getAuthInfo( req );
                 var userId = userInfo.id;
                 var count = 0;
+                var i, pic;
 
+                // 新建商品
                 newItem.add( userId, {
                     title: title,
                     desc: desc,
@@ -264,34 +305,57 @@ var Router ={
                     address: address
                 }, function ( newItem ){
 
+                       console.log( 'item add done' );
                     var itemId = newItem.id;
 
-                    pics.forEach(function ( pic ){
+                    console.log( 'begin add pics', 'pic length:' + pics );
+                    if( count === pics.length ){
 
-                        if( pic ){
-                            newImg.add( itemId, pic, function ( newImg ){
+                        addItemSuccess( itemId );
+                    }
+                    else {
+
+                        for( i = 0; i < pics.length; i++ ){
+
+                            pic = pics[ i ];
+
+                            if( pic ){
+                                newImg.add( itemId, pic, function ( newImg ){
+
+                                    count++;
+
+                                    if( count === pics.length ){
+
+                                        addItemSuccess( itemId );
+                                    }
+                                });
+                            }
+                            else {
 
                                 count++;
 
                                 if( count === pics.length ){
 
-                                    next( itemId );
+                                    addItemSuccess( itemId );
                                 }
-                            });
-                        }
-                        else {
-
-                            count++;
-
-                            if( count === pics.length ){
-
-                                next( itemId );
                             }
                         }
+                    }
 
-                    });
                 })
 
+            }
+
+            function addItemSuccess( itemId ){
+
+                console.log( 'itemAdd success!' );
+                API.send( req, res, {
+                    result: true,
+                    type: 'newItem',
+                    data: {
+                        itemId: itemId
+                    }
+                });
             }
         }
     },
