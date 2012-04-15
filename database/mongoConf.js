@@ -14,6 +14,6 @@ var USERNAME = 'hp1kqs5ct40np',
     PORT = '20088',
     DATABASE = 'KdSJmf3ZvQlx';
 // 连接
-mongoose.connect( 'mongodb://' + USERNAME + ':' + PASSWORD + '@' + HOST + '/' + DATABASE );
+mongoose.connect( 'mongodb://' + USERNAME + ':' + PASSWORD + '@' + HOST + ':' + PORT + '/' + DATABASE );
 
 */
