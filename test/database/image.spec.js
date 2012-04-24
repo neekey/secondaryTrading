@@ -213,6 +213,84 @@ describe( '图片信息操作接口', function(){
         });
     });
 
+    it( 'getByItemId', function(){
+
+        var Img = new DB.image();
+        var getFinished = false;
+        var getErr;
+        var getErrMsg;
+        var imgs;
+        var img;
+
+        runs( function(){
+
+            Img.getByItemId( newItemId, function( i ){
+
+                getFinished = true;
+                imgs = i;
+            });
+
+            Img.on( '_error', function( msg, err ){
+
+                getErr = err;
+                getErrMsg = msg;
+            });
+        });
+
+        waitsFor( function(){
+
+            return getFinished;
+        }, 'getByItemId 超时', waitsForTimeout );
+
+        runs( function(){
+
+            img = imgs[ 0 ];
+            expect( typeof getErr ).toEqual( 'undefined' );
+            expect( typeof getErrMsg ).toEqual( 'undefined' );
+            expect( typeof img ).not.toEqual( 'undefined' );
+            expect( imgs.length).toBe( 1 );
+            expect( img.path ).toEqual( originImgObj.path );
+            expect( img.mime ).toEqual( originImgObj.mime );
+            expect( img.type ).toEqual( originImgObj.type );
+            expect( img.size ).toEqual( originImgObj.size );
+        });
+
+        // 给定错误格式的id
+        runs( function(){
+
+            img = undefined;
+            getFinished = false;
+            getErr = undefined;
+            getErrMsg = undefined;
+
+            // 此处由于id格式错误，因此其实是同步的情况，如果on在后面，会出现没有捕获异常的情况
+            Img.on( '_error', function( msg, err ){
+
+                getFinished = true;
+                getErr = err;
+                getErrMsg = msg;
+            });
+
+            Img.getByItemId( newItemId + Date.now(), function( i ){
+
+                getFinished = true;
+                img = i;
+            });
+        });
+
+        waitsFor( function(){
+
+            return getFinished;
+        }, 'getById错误id 超时', waitsForTimeout);
+
+        runs( function(){
+
+            expect( typeof getErr ).not.toEqual( 'undefined' );
+            expect( typeof getErrMsg ).not.toEqual( 'undefined' );
+            expect( typeof img ).toEqual( 'undefined' );
+        });
+    });
+
     it( 'update图片', function(){
 
         var Img = new DB.image();

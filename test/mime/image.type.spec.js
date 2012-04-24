@@ -3,7 +3,7 @@
  * Session Instance api单元测试
  */
 
-var Mime = require( '../../mime/' );
+var Mime = require( 'gettype' );
 var JPEG_PATH = __dirname + '/images/jpeg.jpg';
 var PNG_PATH = __dirname + '/images/png.png';
 var GIF_PATH = __dirname + '/images/gif.gif';
@@ -36,7 +36,7 @@ describe( '根据文件头判断文件类型', function(){
         runs( function(){
 
             expect( typeof e ).toEqual( 'undefined' );
-            expect( t ).toEqual( 'jpeg' );
+            expect( t ).toEqual( 'jpg' );
         });
     });
 

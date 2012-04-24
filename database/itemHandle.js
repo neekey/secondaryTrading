@@ -7,6 +7,7 @@ var _ = require( 'underscore' );
 var Util = require('util');
 var mongoose = require( 'mongoose' );
 var UserHandle = require( './userHandle' );
+var ImgHandle = require( './imageHandle' );
 var Item = mongoose.model( 'item');
 var EventEmitter = require('events').EventEmitter;
 
@@ -66,11 +67,23 @@ _.extend( itemHandle.prototype, {
      * @param next
      * //todo 添加单元测试
      */
-    query: function( query, next ){
+    query: function( query, fields, next ){
 
         var that = this;
-        
-        Item.find( query, fields, function( err, items ){
+        var imgH = new ImgHandle();
+        var imgFindCount = 0;
+        var Query = Item.$where( query );
+
+        if( typeof fields === 'function' ){
+
+            next = fields;
+        }
+        else {
+
+            Query.select.apply( Query, fields );
+        }
+
+        Query.exec( function( err, items ){
 
             if( err ){
 
@@ -78,8 +91,32 @@ _.extend( itemHandle.prototype, {
             }
             else {
 
-                next( items );
+                // 查找每个items的图片
+                if( items.length > 0 ){
+                    items.forEach(function ( item ){
+
+                        imgH.getByItemId( item._id, function ( imgs ){
+
+                            item.imgs = imgs;
+                            imgFindCount++;
+
+                            if( imgFindCount === items.length ){
+
+                                next( items );
+                            }
+                        });
+                    });
+                }
+                else {
+
+                    next( items );
+                }
             }
+        });
+
+        imgH.on( '_error', function ( msg, err ){
+
+            that.emit( '_error', msg, err );
         });
     },
 

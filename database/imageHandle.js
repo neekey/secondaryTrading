@@ -7,7 +7,6 @@ var _ = require( 'underscore' );
 var Util = require('util');
 var mongoose = require( 'mongoose' );
 var ImageModel = mongoose.model( 'image' );
-var ItemHandle = require( './itemHandle' );
 var EventEmitter = require('events').EventEmitter;
 
 var imageHandle = function(){
@@ -27,7 +26,9 @@ _.extend( imageHandle.prototype, {
      */
     add: function( itemId, imgObj, next ){
 
-        var itemHandle = new ItemHandle();
+        var ItemHandle = require( './itemHandle' );
+        var itemHandle = new ItemHandle;
+
         var that = this;
 
         // 检查itemId是否存在
@@ -143,6 +144,35 @@ _.extend( imageHandle.prototype, {
                 else {
 
                     that.emit( '_error', 'id为:' + imgId + ' 的图片不存在!', err );
+                }
+            }
+        });
+    },
+
+    /**
+     * 根据itemId 获取图片
+     * @param itemId
+     * @param next
+     */
+    getByItemId: function ( itemId, next ){
+
+        var that = this;
+
+        ImageModel.find( { itemId: itemId }, function( err, imgs ){
+
+            if( err ){
+
+                return that.emit( '_error', '查找出错，itemId:' + itemId, err );
+            }
+            else {
+
+                if( imgs ){
+
+                    return next( imgs );
+                }
+                else {
+
+                    that.emit( '_error', 'itemId为:' + itemId + ' 的图片不存在!', err );
                 }
             }
         });

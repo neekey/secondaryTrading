@@ -185,6 +185,129 @@ describe( '商品操作接口', function(){
         });
     });
 
+    it( 'query', function(){
+
+        var itemAddCount = 0;
+        var imgAddCount = 0;
+        var itemAddErr = undefined;
+        var itemAddErrMsg = undefined;
+        var imgAddErr = undefined;
+        var imgAddErrMsg = undefined;
+        var itemQueryErr = undefined;
+        var itemQueryErrMsg = undefined;
+        var addFinished = false;
+        var currentDate = Date.now();
+
+        var newItemObjs = [
+            newItemObj( 'query_one' ),
+            newItemObj( 'query_two' ),
+            newItemObj( 'query_three' )
+        ];
+        var newItems = [];
+        var newImgObjs = [
+
+            newImgObj( 'query_one' ),
+            newImgObj( 'query_two' ),
+            newImgObj( 'query_three' )
+        ];
+        var newImgs = [];
+        var itemToImg = {};
+
+        runs(function (){
+
+            var Item = new DB.item();
+            var Img = new DB.image();
+
+            newItemObjs.forEach( function ( itemObj ){
+
+                Item.add( newUserId, itemObj, function( i ){
+
+//                itemAddFinished = true;
+//                newItemId = i._id;
+                    itemAddCount++;
+                    newItems.push( i );
+                    newItems[ i._id ] = i;
+
+                    if( itemAddCount === 3 ){
+
+                        newImgObjs.forEach(function ( imgObj, index ){
+
+                            Img.add( newItems[ index ]._id, imgObj, function ( img ){
+
+                                imgAddCount++;
+                                newImgs.push( img );
+                                newImgs[ img._id ] = img;
+                                if( !itemToImg[ img.itemId ] ){
+
+                                    itemToImg[ img.itemId ] = [];
+                                }
+
+                                itemToImg[ img.itemId ].push( img );
+
+                                if( imgAddCount === 3 ){
+
+                                    addFinished = true;
+                                }
+                            });
+                        });
+                    }
+                });
+            });
+
+
+            Item.on( '_error', function( msg, err ){
+
+                itemAddErr = err;
+                itemAddErrMsg = msg;
+            });
+
+            Img.on( '_error', function ( msg, err ){
+
+                imgAddErr = err;
+                imgAddErrMsg = msg;
+            });
+        });
+
+        waitsFor(function (){
+
+            return addFinished;
+        });
+
+        runs(function (){
+
+            var Item = new DB.item();
+            Item.on( '_error', function ( msg, err ){
+
+                itemQueryErr = err;
+                itemQueryErrMsg = msg;
+            });
+
+            Item.query( 'this.size >= ' + currentDate, function ( items ){
+
+                items.forEach(function ( item ){
+
+                    var originItem = newItems[ items._id ];
+
+                    expect( itemAddErr).toBeUndefined();
+                    expect( itemAddErrMsg ).toBeUndefined();
+                    expect( imgAddErr ).toBeUndefined();
+                    expect( imgAddErrMsg ).toBeUndefined();
+                    expect( itemQueryErr ).toBeUndefined();
+                    expect( itemQueryErrMsg ).toBeUndefined();
+
+                    // 比较item是否一致
+                    expect( item.title ).toEqual( originItem.title );
+                    expect( item.desc ).toEqual( originItem.desc );
+                    expect( item.price ).toEqual( originItem.price );
+                    expect( item.size ).toEqual( originItem.size );
+                    expect( item.size >= currentDate ).toEqual( true );
+
+                    expect( item.imgs.length ).toEqual( itemToImg[ item._id ] );
+                });
+            });
+        });
+    });
+
     it( 'update商品', function(){
 
         var Item = new DB.item();
@@ -304,4 +427,16 @@ function newItemObj( apiType ){
     };
 
     return itemObj;
+}
+
+function newImgObj( apiType ){
+
+    var imgObj = {
+        path: 'jasmine_img_api_' + apiType + Date.now() + '_path',
+        mime: 'image/' + Date.now(),
+        type: 'jasmine_img_api_' + apiType + Date.now() + '_type',
+        size: Date.now()
+    };
+
+    return imgObj;
 }
