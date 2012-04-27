@@ -362,6 +362,97 @@ var Router ={
     },
 
     /**
+     * @param query 商品搜索query 直接使用js表达式，比如 'this.price > 200'
+     * @param len 最多获取的item数量
+     * @param id 直接制定itemid，该字段给定后将直接忽略另外两个字段
+     * @return { items: [ 有len指定的item ], ids: [ 所有的结果item的_id值]
+     */
+    searchItem: {
+
+        type: 'get',
+        rule: '/searchitem',
+//        middleware: [ 'shouldLogin' ],
+
+        fn: function ( req, res ){
+
+            // 商品搜索query 直接使用js表达式，比如 'this.price > 200'
+            var query = req.query.query;
+            // 直接制定item id
+            var itemId = req.query.id;
+            // 最多获取的items数量
+            var maxLen = isNaN( parseInt( req.query.len ) ) ? 10 : parseInt( req.query.len );
+            var itemHandle = new DB.item();
+            var itemCount = 0;
+            var _items = [];
+            var _ids = [];
+
+            itemHandle.on( '_error', function ( msg, error ){
+
+                API.send( req, res, {
+                    result: false,
+                    type: 'searchItem',
+                    error: msg,
+                    data: error
+                });
+            });
+
+            if( itemId ){
+
+                itemHandle.getById( itemId, function ( item ){
+
+                    var _item = item.toJSON();
+                    _item.imgs = item.imgs;
+
+                    _items.push( _item );
+                    _ids.push( _item._id );
+
+                    API.send( req, res, {
+                        result: true,
+                        type: 'searchItem',
+                        error: undefined,
+                        data: {
+                            items: _items,
+                            ids: _ids
+                        }
+                    });
+                });
+            }
+            else {
+                itemHandle.query( query, function ( items ){
+
+                    // items被json化后无法找到imgs成员
+                    // 先把每个item的数据部分转化出来
+                    items.forEach(function ( item ){
+
+                        var _item = item.toJSON();
+
+                        if( itemCount < maxLen ){
+
+                            _item.imgs = item.imgs;
+
+                            _items.push( _item );
+
+                            itemCount++;
+                        }
+
+                        _ids.push( _item._id );
+                    });
+
+                    API.send( req, res, {
+                        result: true,
+                        type: 'searchItem',
+                        error: undefined,
+                        data: {
+                            items: _items,
+                            ids: _ids
+                        }
+                    });
+                });
+            }
+        }
+    },
+
+    /**
      * 文件上传
      */
     imageUpload: {
