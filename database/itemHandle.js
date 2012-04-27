@@ -123,11 +123,12 @@ _.extend( itemHandle.prototype, {
     /**
      * 更具商品id查找商品
      * @param id
-     * @param next
+     * @param next( items ) --> 该item对象拥有成员item.imgs
      */
     getById: function( id, next ){
 
         var that = this;
+        var imgH = new ImgHandle();
 
         Item.findById( id, function( err, item ){
 
@@ -138,13 +139,24 @@ _.extend( itemHandle.prototype, {
 
                 if( item ){
 
-                    return next( item );
+                    // 获取该item对应的图片
+                    imgH.getByItemId( item._id, function ( imgs ){
+
+                        item.imgs = imgs;
+
+                        return next( item );
+                    });
                 }
                 else {
 
                     that.emit( '_error', 'id为:' + id + ' 的商品不存在!', err );
                 }
             }
+        });
+
+        imgH.on( '_error', function ( msg, err ){
+
+            that.emit( '_error', msg, err );
         });
     },
 
