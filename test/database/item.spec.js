@@ -195,6 +195,7 @@ describe( '商品操作接口', function(){
         var imgAddErrMsg = undefined;
         var itemQueryErr = undefined;
         var itemQueryErrMsg = undefined;
+        var itemQueryResult = undefined;
         var addFinished = false;
         var currentDate = Date.now();
 
@@ -282,28 +283,40 @@ describe( '商品操作接口', function(){
                 itemQueryErrMsg = msg;
             });
 
-            Item.query( 'this.size >= ' + currentDate, function ( items ){
+            Item.query( { price: currentDate, priceType: '>=' }, function ( items ){
 
-                items.forEach(function ( item ){
+                itemQueryResult = items;
+            });
+        });
 
-                    var originItem = newItems[ items._id ];
+        waitsFor(function (){
 
-                    expect( itemAddErr).toBeUndefined();
-                    expect( itemAddErrMsg ).toBeUndefined();
-                    expect( imgAddErr ).toBeUndefined();
-                    expect( imgAddErrMsg ).toBeUndefined();
-                    expect( itemQueryErr ).toBeUndefined();
-                    expect( itemQueryErrMsg ).toBeUndefined();
+            return itemQueryResult;
+        }, 5000 );
 
-                    // 比较item是否一致
-                    expect( item.title ).toEqual( originItem.title );
-                    expect( item.desc ).toEqual( originItem.desc );
-                    expect( item.price ).toEqual( originItem.price );
-                    expect( item.size ).toEqual( originItem.size );
-                    expect( item.size >= currentDate ).toEqual( true );
+        runs(function(){
 
-                    expect( item.imgs.length ).toEqual( itemToImg[ item._id ] );
-                });
+            var items = itemQueryResult;
+
+            expect( items.length ).toBe( 3 );
+
+            items.forEach(function ( item ){
+
+                var originItem = newItems[ item._id ];
+                var itemJSON = item.toJSON();
+
+                expect( itemAddErr).toBeUndefined();
+                expect( itemAddErrMsg ).toBeUndefined();
+                expect( imgAddErr ).toBeUndefined();
+                expect( imgAddErrMsg ).toBeUndefined();
+                expect( itemQueryErr ).toBeUndefined();
+                expect( itemQueryErrMsg ).toBeUndefined();
+
+                // 比较item是否一致
+                expect( itemJSON.title ).toEqual( originItem.title );
+                expect( itemJSON.desc ).toEqual( originItem.desc );
+                expect( itemJSON.price ).toEqual( originItem.price );
+                expect( item.imgs.length ).toEqual( itemToImg[ item._id ].length );
             });
         });
     });
@@ -421,7 +434,7 @@ function newItemObj( apiType ){
 
     var itemObj = {
         title: 'jasmine_item_api_' + apiType + Date.now() + '_title',
-        price: 18739279 + parseInt( Math.random() * 100  + 1 ),
+        price: Date.now(),
         desc: 'jasmine_item_api_' + apiType + Date.now() + '_desc',
         location: [ Date.now() + 1, Date.now() + 10 ]
     };

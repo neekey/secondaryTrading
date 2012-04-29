@@ -96,7 +96,7 @@ describe( '图片类型和大小验证', function(){
                 e = err;
                 v = valid;
                 t = valid ? imgInfo.type : imgInfo;
-                console.log( 'SIZE_NO_FORMAT_PATH', imgInfo, valid, t ) ;
+//                console.log( 'SIZE_NO_FORMAT_PATH', imgInfo, valid, t ) ;
 
             });
         });
@@ -158,7 +158,7 @@ describe( '图片类型和大小验证', function(){
         runs(function(){
             Upload.check( NO_SIZE_FORMAT_PATH, function( err, valid, imgInfo ){
 
-                console.log( arguments );
+//                console.log( arguments );
                 e = err;
                 v = valid;
                 t = valid ? imgInfo.type : imgInfo;

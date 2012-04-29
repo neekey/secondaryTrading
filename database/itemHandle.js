@@ -62,28 +62,120 @@ _.extend( itemHandle.prototype, {
 
     /**
      * 根据条件检索商品
-     * @param query
+     * @param query {Object} {
+     *      title: {String},
+     *      desc: {String},
+     *      price: {Number},
+     *      priceType: {String} '>' '>=' '<' '<=' '='
+     *      location: [Number],
+     *      maxDistance: Number,
+     *      address: {String},
+     *      ids: [String],
+     *      id: {String}
+     * }
      * @param fields
      * @param next
-     * //todo 添加单元测试
+     * @example item.query( { title: 'hello', price: 20, priceType: '>=', location: [ 12, 32 ], ids: [ '34214', '3411', '4141'], id: 'kjdlakjf' }
      */
     query: function( query, fields, next ){
 
         var that = this;
         var imgH = new ImgHandle();
+        var queryObj = {};
+        var queryField = undefined;
+        var queryValue = undefined;
         var imgFindCount = 0;
-        var Query = Item.$where( query );
+
+        for( queryField in query ){
+
+            queryValue = query[ queryField ];
+
+            switch( queryField ){
+
+                case 'title':
+                case 'desc':
+                case 'address': {
+                    queryObj[ queryField ] = {
+                        $regex: new RegExp( queryValue )
+                    };
+
+                    break;
+                }
+                case 'location': {
+
+                    var maxDistance = query.maxDistance;
+
+                    if( maxDistance ){
+
+                        queryObj.location = {
+                            $near: queryValue,
+                            $maxDistance: maxDistance || 10000
+                        };
+                    }
+                    else {
+
+                        queryObj.location = queryValue;
+                    }
+
+                    break;
+                }
+                case 'price': {
+
+                    var priceType = query.priceType || '=';
+
+                    if( priceType === '=' ){
+
+                        queryObj.price = queryValue;
+                    }
+                    else {
+
+                        switch( priceType ){
+                            case '>': {
+                                priceType = '$gt';
+                                break;
+                            }
+                            case '>=': {
+                                priceType = '$gte';
+                                break;
+                            }
+                            case '<': {
+                                priceType = '$lt';
+                                break;
+                            }
+                            case '<=':
+                                priceType = '$lte';
+                                break;
+                            default:
+                                break;
+                        }
+
+                        queryObj.price = {};
+                        queryObj.price[ priceType ] = queryValue;
+                    }
+
+                    break;
+                }
+                case 'ids': {
+
+                    queryObj._id = {
+                        $in: queryValue
+                    };
+
+                    break;
+                }
+                case 'id': {
+                    queryObj._id = queryValue;
+                }
+            }
+        }
 
         if( typeof fields === 'function' ){
 
             next = fields;
-        }
-        else {
-
-            Query.select.apply( Query, fields );
+            fields = [];
         }
 
-        Query.exec( function( err, items ){
+        Item.find( queryObj, fields, function( err, items ){
 
             if( err ){
 
