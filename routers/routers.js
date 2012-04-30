@@ -368,7 +368,7 @@ var Router ={
      * @param location 用户的坐标 用逗号隔开
      * @param maxDistance 根据用户坐标的搜索范围 若该值不给定，则直接寻找与location相等的项目
      * @param price 用户价格的值，与priceType一起使用
-     * @param priceType 价格比较类型
+     * @param priceType 价格比较类型 todo 添加多条件，用逗号隔开
      * @param ids 直接制定需要获取的所有id对应的item,用逗号隔开
      * @param id 直接制定itemid，该字段给定后将直接忽略另外两个字段
      * @param len 最多获取的item数量
