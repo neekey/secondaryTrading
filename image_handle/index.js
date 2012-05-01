@@ -240,6 +240,7 @@ var upload = {
      */
     saveAs: function ( oldPath, newPath, next ){
 
+        // rename相当于是move了
         FS.rename( oldPath, newPath, function( err ){
 
             if( err ){
