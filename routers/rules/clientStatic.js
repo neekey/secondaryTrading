@@ -34,7 +34,7 @@ var transferFile = function (request, response) {
     });
 }
 
-exports.clientStatic = {
+exports.rule = {
     type: 'get',
     rule: '/client/*',
     fn: function(req, res){
