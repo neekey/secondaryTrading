@@ -47,7 +47,7 @@ var upload = {
         var y = Math.floor(Math.random() * Math.pow(16,4)).toString(16);
         var z = Math.floor(Math.random() * Math.pow(16,4)).toString(16);
 
-        return '/tmp/' + [x,y,z].join('_');
+        return 'tmp/' + [x,y,z].join('_');
     },
 
     /**
