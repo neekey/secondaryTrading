@@ -81,10 +81,22 @@ _.extend( itemHandle.prototype, {
 
         var that = this;
         var imgH = new ImgHandle();
+        var userH = new UserHandle();
         var queryObj = {};
         var queryField = undefined;
         var queryValue = undefined;
         var imgFindCount = 0;
+        var userFindCount = 0;
+
+        imgH.on( '_error', function ( msg, err ){
+
+            that.emit( '_error', msg, err );
+        });
+
+        userH.on( '_error', function ( msg, err ){
+
+            that.emit( '_error', msg, err );
+        });
 
         for( queryField in query ){
 
@@ -187,12 +199,25 @@ _.extend( itemHandle.prototype, {
                 if( items.length > 0 ){
                     items.forEach(function ( item ){
 
+                        // 获取图片信息
                         imgH.getByItemId( item._id, function ( imgs ){
 
                             item.imgs = imgs;
                             imgFindCount++;
 
-                            if( imgFindCount === items.length ){
+                            if( imgFindCount === items.length && userFindCount === items.length ){
+
+                                next( items );
+                            }
+                        });
+
+                        // 获取用户信息
+                        userH.getById( item.userId, function ( user ){
+
+                            item.user = user;
+                            userFindCount++;
+
+                            if( imgFindCount === items.length && userFindCount === items.length ){
 
                                 next( items );
                             }
@@ -205,11 +230,6 @@ _.extend( itemHandle.prototype, {
                 }
             }
         });
-
-        imgH.on( '_error', function ( msg, err ){
-
-            that.emit( '_error', msg, err );
-        });
     },
 
     /**
@@ -221,6 +241,22 @@ _.extend( itemHandle.prototype, {
 
         var that = this;
         var imgH = new ImgHandle();
+        var userH = new UserHandle();
+        var ifUserInfoFinished = false;
+        var ifImgFinished = false;
+        var ifErrorOccur = false;
+
+        imgH.on( '_error', function ( msg, err ){
+
+            ifErrorOccur = true;
+            that.emit( '_error', msg, err );
+        });
+
+        userH.on( '_error', function ( msg, err ){
+
+            ifErrorOccur = true;
+            that.emit( '_error', msg, err );
+        });
 
         Item.findById( id, function( err, item ){
 
@@ -236,7 +272,22 @@ _.extend( itemHandle.prototype, {
 
                         item.imgs = imgs;
 
-                        return next( item );
+                        ifImgFinished = true;
+
+                        if( ifImgFinished && ifUserInfoFinished && ifErrorOccur === false ){
+                            return next( item );
+                        }
+                    });
+
+                    userH.getById( item.userId, function ( user ){
+
+                        item.user = user;
+
+                        ifUserInfoFinished = true;
+
+                        if( ifImgFinished && ifUserInfoFinished && ifErrorOccur === false ){
+                            return next( item );
+                        }
                     });
                 }
                 else {
@@ -246,10 +297,7 @@ _.extend( itemHandle.prototype, {
             }
         });
 
-        imgH.on( '_error', function ( msg, err ){
 
-            that.emit( '_error', msg, err );
-        });
     },
 
     /**

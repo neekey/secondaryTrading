@@ -14,13 +14,17 @@ describe( '商品操作接口', function(){
     var newItem;
     var newItemId;
     var originItemObj;
+    var newUserInfo = {
+        email: 'jasmine_user_api_add' + Date.now() + '@gmail.com',
+        password: 'jasmine_user_api_add' + Date.now()
+    };
 
     it( '添加用于测试的新用户', function(){
 
         var User = new DB.user();
 
-        var email = 'jasmine_user_api_add' + Date.now() + '@gmail.com';
-        var password = 'jasmine_user_api_add' + Date.now();
+        var email = newUserInfo.email;
+        var password = newUserInfo.password;
         var userAddFinished = false;
 
         // 添加新用户
@@ -147,6 +151,11 @@ describe( '商品操作接口', function(){
             expect( item.desc ).toEqual( originItemObj.desc );
             expect( item.location[ 0 ] ).toEqual( originItemObj.location[ 0 ] );
             expect( item.location[ 1 ] ).toEqual( originItemObj.location[ 1 ] );
+
+            // 比较user信息是否获取成功
+            expect( item.user ).not.toBe( undefined );
+            expect( item.user.email ).toBe( newUserInfo.email );
+            expect( item.user.password ).toBe( newUserInfo.password );
         });
 
         // 给定错误格式的id
@@ -182,6 +191,7 @@ describe( '商品操作接口', function(){
             expect( typeof getErr ).not.toEqual( 'undefined' );
             expect( typeof getErrMsg ).not.toEqual( 'undefined' );
             expect( typeof item ).toEqual( 'undefined' );
+
         });
     });
 
@@ -317,6 +327,11 @@ describe( '商品操作接口', function(){
                 expect( itemJSON.desc ).toEqual( originItem.desc );
                 expect( itemJSON.price ).toEqual( originItem.price );
                 expect( item.imgs.length ).toEqual( itemToImg[ item._id ].length );
+
+                // 比较user信息是否获取成功
+                expect( item.user ).not.toBe( undefined );
+                expect( item.user.email ).toBe( newUserInfo.email );
+                expect( item.user.password ).toBe( newUserInfo.password );
             });
         });
     });

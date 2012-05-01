@@ -84,6 +84,7 @@ var searchItem = {
                 if( itemCount < maxLen ){
 
                     _item.imgs = item.imgs;
+                    _item.user = item.user;
 
                     _items.push( _item );
 
