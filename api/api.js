@@ -18,10 +18,10 @@ var Auth = require( '../auth' );
          * @param req
          * @param res
          * @param resData{
-         *      result:
-         *      type:
-         *      data:
-         *      error:
+         *      result: 数据请求是否正常
+         *      type: 数据请求类型
+         *      data: 返回的数据，若出现错误(result = false ) 则应该为错误的具体信息
+         *      error: 错误提示（一般为一串字符串，可以直接给用户看）
          * }
          */
         send: function( req, res, resData ){

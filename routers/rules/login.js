@@ -18,7 +18,8 @@ var login = {
             API.send( req, res, {
                 result: false,
                 type: 'login',
-                error: msg
+                error: msg,
+                data: error
             });
         });
 

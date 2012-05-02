@@ -5,9 +5,9 @@ var IMG = require( '../../image_handle' );
 
 var newItem =  {
     type: 'post',
-        rule: '/newItem',
-        middleware: [ 'shouldLogin' ],
-        fn: function ( req, res ){
+    rule: '/newItem',
+    middleware: [ 'shouldLogin' ],
+    fn: function ( req, res ){
 
         var newImg = new DB.image();
         var newItem = new DB.item();
@@ -64,7 +64,7 @@ var newItem =  {
                             API.send( req, res, {
                                 result: false,
                                 type: 'newItem',
-                                error: 'error when checking image!',
+                                error: '图片检验失败!',
                                 data: err
                             });
 
@@ -93,7 +93,7 @@ var newItem =  {
                                         API.send( req, res, {
                                             result: false,
                                             type: 'newItem',
-                                            error: 'error when saving image!',
+                                            error: '图片保存失败!',
                                             data: err
                                         });
 
@@ -111,7 +111,6 @@ var newItem =  {
 
                                         if( picCheckCount === 3 ){
 
-                                            console.log( 'before additem' );
                                             addItem();
                                         }
                                     }
@@ -124,7 +123,6 @@ var newItem =  {
 
                                 if( picCheckCount === 3 ){
 
-                                    console.log( 'before additem' );
                                     addItem();
                                 }
                             }
@@ -146,8 +144,6 @@ var newItem =  {
 
         // 添加新商品
         function addItem(){
-
-            console.log( 'addItem' );
 
             var userId = userInfo.id;
             var count = 0;
