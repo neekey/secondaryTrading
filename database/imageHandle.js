@@ -89,6 +89,62 @@ _.extend( imageHandle.prototype, {
     },
 
     /**
+     * 删除所有指定itemId的图片
+     * @param {String} itemId
+     * @param {Function} next( imgs ) imgs为被删除的图像数组
+     */
+    delByItemId: function ( itemId, next ){
+
+        var that = this;
+        var ifError = false;
+        var imgCount = 0;
+        var imgLen = 0;
+
+        ImageModel.find({ itemId: itemId }, function ( err, imgs ){
+
+            if( err ){
+
+                ifError = true;
+                that.emit( '_error', '查找itemId为：' + itemId + ' 的图片失败!', err );
+            }
+            else {
+
+                imgLen = imgs ? imgs.length : 0;
+
+                imgs && imgs.forEach(function ( img ){
+
+                    img.remove(function ( err ){
+
+                        imgCount++;
+
+                        if( ifError === false ){
+
+                            if( err ){
+
+                                ifError = true;
+                                that.emit( '_error', '删除图片出错！', err );
+                            }
+                            else {
+
+                                if( imgCount === imgLen ){
+
+                                    next( imgs );
+                                }
+                            }
+                        }
+
+                    });
+                });
+
+                if( imgCount === imgLen ){
+
+                    next( [] );
+                }
+            }
+        });
+    },
+
+    /**
      * 更新图片信心
      * @param imgId
      * @param updateObj
