@@ -349,6 +349,7 @@ _.extend( itemHandle.prototype, {
             item.price = updateObj.price || item.price;
             item.desc = updateObj.desc || item.desc;
             item.location = updateObj.location || item.location;
+            item.address = updateObj.address || item.address;
 
             item.save( function( err ){
 
