@@ -71,7 +71,8 @@ _.extend( itemHandle.prototype, {
      *      maxDistance: Number,
      *      address: {String},
      *      ids: [String],
-     *      id: {String}
+     *      id: {String},
+     *      userId: {String}
      * }
      * @param fields
      * @param next
@@ -177,6 +178,11 @@ _.extend( itemHandle.prototype, {
                 }
                 case 'id': {
                     queryObj._id = queryValue;
+                    break;
+                }
+                case 'userId': {
+                    queryObj.userId = queryValue;
+                    break;
                 }
             }
         }
