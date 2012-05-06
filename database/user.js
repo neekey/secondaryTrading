@@ -5,8 +5,9 @@ var mongoose = require( 'mongoose' ),
 var user = new schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    sex: { type: String, 'default': 'undefined' },
+    sex: { type: String, 'default': 'male' },
     location: [ Number ],
+    address: { type: String },
     cellphone: { type: Number },
     qq: { type: Number },
     wangwang: { type: Number }

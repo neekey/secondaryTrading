@@ -107,6 +107,90 @@ _.extend( userHandle.prototype, {
                 return next( user );
             }
         });
+    },
+
+    /**
+     * 根据给定的email来修改制定的用户的信息
+     * @param email
+     * @param updateObj
+     * @param next
+     */
+    updateByEmail: function( email, updateObj, next ){
+
+        var that = this;
+
+        // 检查itemId是否存在
+        this.get( email, function( user ){
+
+            if( user ){
+
+                user.sex = ( updateObj.sex === 'male' || updateObj.sex === 'female' ) ? updateObj.sex : user.sex;
+                user.location = updateObj.location || user.location;
+                user.address = updateObj.address || user.address;
+                user.cellphone = updateObj.cellphone || user.cellphone;
+                user.qq = updateObj.qq || user.qq;
+                user.wangwang = updateObj.wangwang || user.wangwang;
+
+                user.save( function( err ){
+
+                    if( err ){
+
+                        that.emit( '_error', '用户信息修改失败', err );
+                    }
+                    else {
+
+                        next( user );
+                    }
+                });
+            }
+            else {
+
+                that.emit( '_error', 'email为:' + email + ' 的用户不存在!' );
+            }
+
+        });
+    },
+
+    /**
+     * 根据给定的id来修改制定的用户的信息
+     * @param userId
+     * @param updateObj
+     * @param next
+     */
+    updateById: function( userId, updateObj, next ){
+
+        var that = this;
+
+        // 检查itemId是否存在
+        this.getById( userId, function( user ){
+
+            if( user ){
+
+                user.sex = ( updateObj.sex === 'male' || updateObj.sex === 'female' ) ? updateObj.sex : user.sex;
+                user.location = updateObj.location || user.location;
+                user.address = updateObj.address || user.address;
+                user.cellphone = updateObj.cellphone || user.cellphone;
+                user.qq = updateObj.qq || user.qq;
+                user.wangwang = updateObj.wangwang || user.wangwang;
+
+                user.save( function( err ){
+
+                    if( err ){
+
+                        that.emit( '_error', '用户信息修改失败', err );
+                    }
+                    else {
+
+                        next( user );
+                    }
+                });
+            }
+            else {
+
+                that.emit( '_error', 'id为:' + userId + ' 的用户不存在!' );
+            }
+
+        });
     }
 });
 

@@ -230,4 +230,182 @@ describe( '用户操作接口', function(){
             expect( user.sex ).toEqual( 'undefined' );
         });
     });
+
+    it( 'updateById', function(){
+
+        var User = new DB.user();
+
+        var email = 'jasmine_user_api_add' + Date.now() + '@gmail.com';
+        var password = 'jasmine_user_api_add' + Date.now();
+        var updateObj = {
+            sex: 'male',
+            cellphone: 18797080,
+            qq: 909287970,
+            wangwang: 50982095809285,
+            location: [ 23414, 24226 ],
+            address: 'jasmine_user_api_updateById' + Date.now() + '_address'
+        };
+        var userAddFinished = false;
+        var userUpdateFinished = false;
+        var userGetFinished = false;
+        var user;
+        var userId;
+
+        // 添加新用户
+        runs(function(){
+            User.add( email, password, function( user ){
+                userAddFinished = true;
+                userId = user._id;
+            });
+        });
+
+        // 等待添加操作完成
+        waitsFor(function(){
+            return userAddFinished;
+        }, '添加用户:' + email + ' 超时', waitsForTimeout );
+
+        runs(function(){
+            expect( userAddFinished ).toEqual( true );
+        });
+
+        // 根据用户id重新从数据库中获取用户
+        runs(function(){
+            User.getById( userId, function( u ){
+                user = u;
+                userGetFinished = true;
+            });
+        });
+
+        // 等待获取用户的操作完成
+        waitsFor( function(){
+            return userGetFinished;
+        }, '获取用户:' + email + '超时', waitsForTimeout );
+
+        runs(function(){
+            expect( user.email ).toEqual( email );
+            expect( user.password ).toEqual( password );
+            expect( user.sex ).toEqual( 'undefined' );
+            expect( user.address ).toEqual( undefined );
+            expect( user.location.length ).toBe( 0 );
+            expect( user.cellphone ).toEqual( undefined );
+            expect( user.qq ).toEqual( undefined );
+            expect( user.wangwang ).toEqual( undefined );
+
+        });
+
+        // 根据用户id更新用户信息
+        runs(function(){
+            User.updateById( userId, updateObj, function( u ){
+
+                user = u;
+                userUpdateFinished = true;
+            });
+        });
+
+        // 等待更新用户的操作完成
+        waitsFor( function(){
+            return userUpdateFinished;
+        }, '更新用户:' + email + '超时', waitsForTimeout );
+
+        runs(function(){
+            expect( user.email ).toEqual( email );
+            expect( user.password ).toEqual( password );
+            expect( user.sex ).toEqual( updateObj.sex );
+            expect( user.address ).toEqual( updateObj.address );
+            expect( user.location[ 0 ] ).toEqual( updateObj.location[ 0 ] );
+            expect( user.location[ 1 ] ).toEqual( updateObj.location[ 1 ] );
+            expect( user.cellphone ).toEqual( updateObj.cellphone );
+            expect( user.qq ).toEqual( updateObj.qq );
+            expect( user.wangwang ).toEqual( updateObj.wangwang );
+        });
+    });
+
+    it( 'updateByEmail', function(){
+
+        var User = new DB.user();
+
+        var email = 'jasmine_user_api_add' + Date.now() + '@gmail.com';
+        var password = 'jasmine_user_api_add' + Date.now();
+        var updateObj = {
+            sex: 'male',
+            cellphone: 18797080,
+            qq: 909287970,
+            wangwang: 50982095809285,
+            location: [ 23414, 24226 ],
+            address: 'jasmine_user_api_updateById' + Date.now() + '_address'
+        };
+        var userAddFinished = false;
+        var userUpdateFinished = false;
+        var userGetFinished = false;
+        var user;
+        var userId;
+
+        // 添加新用户
+        runs(function(){
+            User.add( email, password, function( user ){
+                userAddFinished = true;
+                userId = user._id;
+            });
+        });
+
+        // 等待添加操作完成
+        waitsFor(function(){
+            return userAddFinished;
+        }, '添加用户:' + email + ' 超时', waitsForTimeout );
+
+        runs(function(){
+            expect( userAddFinished ).toEqual( true );
+        });
+
+        // 根据用户id重新从数据库中获取用户
+        runs(function(){
+            User.getById( userId, function( u ){
+                user = u;
+                userGetFinished = true;
+            });
+        });
+
+        // 等待获取用户的操作完成
+        waitsFor( function(){
+            return userGetFinished;
+        }, '获取用户:' + email + '超时', waitsForTimeout );
+
+        runs(function(){
+            expect( user.email ).toEqual( email );
+            expect( user.password ).toEqual( password );
+            expect( user.sex ).toEqual( 'undefined' );
+            expect( user.address ).toEqual( undefined );
+            expect( user.location.length ).toBe( 0 );
+            expect( user.cellphone ).toEqual( undefined );
+            expect( user.qq ).toEqual( undefined );
+            expect( user.wangwang ).toEqual( undefined );
+
+        });
+
+        // 根据用户email更新用户信息
+        runs(function(){
+            User.updateByEmail( email, updateObj, function( u ){
+
+                user = u;
+                userUpdateFinished = true;
+            });
+        });
+
+        // 等待更新用户的操作完成
+        waitsFor( function(){
+            return userUpdateFinished;
+        }, '更新用户:' + email + '超时', waitsForTimeout );
+
+        runs(function(){
+            expect( user.email ).toEqual( email );
+            expect( user.password ).toEqual( password );
+            expect( user.sex ).toEqual( updateObj.sex );
+            expect( user.address ).toEqual( updateObj.address );
+            expect( user.location[ 0 ] ).toEqual( updateObj.location[ 0 ] );
+            expect( user.location[ 1 ] ).toEqual( updateObj.location[ 1 ] );
+            expect( user.cellphone ).toEqual( updateObj.cellphone );
+            expect( user.qq ).toEqual( updateObj.qq );
+            expect( user.wangwang ).toEqual( updateObj.wangwang );
+        });
+    });
 });

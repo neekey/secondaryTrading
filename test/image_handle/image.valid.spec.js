@@ -79,7 +79,7 @@ describe( '图片类型和大小验证', function(){
             expect( typeof e ).toEqual( 'undefined' );
             expect( v ).toEqual( true );
             expect( t ).toEqual( 'bmp' );
-            expect( tmpPath.indexOf( '/tmp/' )).toBe( 0 );
+            expect( tmpPath.indexOf( 'tmp/' )).toBe( 0 );
         });
     });
 
@@ -144,7 +144,7 @@ describe( '图片类型和大小验证', function(){
             expect( typeof e ).toEqual( 'undefined' );
             expect( v ).toEqual( false );
             expect( t ).toEqual( '非法的图片格式' );
-            expect( tmpPath.indexOf( '/tmp/' )).toBe( 0 );
+            expect( tmpPath.indexOf( 'tmp/' )).toBe( 0 );
         });
     });
 
@@ -208,7 +208,7 @@ describe( '图片类型和大小验证', function(){
             expect( typeof e ).toEqual( 'undefined' );
             expect( v ).toEqual( false );
             expect( t ).toEqual( '非法的图片文件大小' );
-            expect( tmpPath.indexOf( '/tmp/' )).toBe( 0 );
+            expect( tmpPath.indexOf( 'tmp/' )).toBe( 0 );
         });
     });
 
@@ -270,7 +270,7 @@ describe( '图片类型和大小验证', function(){
             expect( typeof e ).toEqual( 'undefined' );
             expect( v ).toEqual( false );
             expect( t ).toEqual( '非法的图片格式' );
-            expect( tmpPath.indexOf( '/tmp/' )).toBe( 0 );
+            expect( tmpPath.indexOf( 'tmp/' )).toBe( 0 );
         });
     });
 });
