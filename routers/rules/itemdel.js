@@ -69,7 +69,7 @@ var img = {
                                         result: false,
                                         type: 'itemdel',
                                         error: '图片文件删除失败!',
-                                        data: img
+                                        data: err
                                     });
                                 }
                                 else {

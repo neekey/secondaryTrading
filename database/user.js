@@ -10,7 +10,7 @@ var user = new schema({
     address: { type: String },
     cellphone: { type: Number },
     qq: { type: Number },
-    wangwang: { type: Number }
+    wangwang: { type: String }
 });
 
 mongoose.model( 'user', user );
