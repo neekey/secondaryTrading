@@ -2,14 +2,14 @@ var API = require( '../../api/api.js' );
 var Auth = require( '../../auth/' );
 
 var login = {
-    type: 'get',
+    type: 'post',
         rule: '/login',
         middleware: [ 'shouldNotLogin' ],
         fn: function( req, res ){
 
         var auth = new Auth();
 
-        var data = req.query;
+        var data = req.body;
         var email = data.email;
         var password = data.password;
         var options = data.options;

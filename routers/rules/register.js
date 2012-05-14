@@ -2,14 +2,14 @@ var DB = require( '../../database/' );
 var API = require( '../../api/api.js' );
 
 var register = {
-    type: 'get',
+    type: 'post',
         rule: '/register',
         middleware: [ 'shouldNotLogin' ],
         fn: function( req, res ){
 
         var User = new DB.user();
 
-        var data = req.query;
+        var data = req.body;
         var email = data.email;
         var password = data.password;
         var options = data.options;
