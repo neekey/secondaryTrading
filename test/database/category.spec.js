@@ -147,7 +147,7 @@ describe('商品分类测试', function(){
         var ctHandle = new DB.category();
         var newCat;
         var countAdd = 5;
-        var countMinus = 5;
+        var countMinus = 4;
         var countEqual = 10;
         var err;
         var errMsg;
@@ -318,6 +318,99 @@ describe('商品分类测试', function(){
             expect( err ).toBe( undefined );
             expect( errMsg).toBe( undefined );
             expect( newCat ).toBe( undefined );
+        });
+    });
+
+    // 测试当一个类别的 itemcount被修改为0后是否会自动删除
+    it( 'updateItemCount-custom-count修改为0后', function(){
+
+        var ctHandle = new DB.category();
+        var newCatObj = CatFactory( 'upadteItemCount', 'custom' );
+        var newCat;
+        var err;
+        var errMsg;
+        var updateFinished = false;
+
+        newCatObj.itemcount = 2;
+
+        ctHandle.on( '_error', function ( msg, e ){
+
+            err = e;
+            errMsg = msg;
+        });
+
+        runs(function(){
+
+            jasmine.log( '添加新分类' );
+
+            ctHandle.add( newCatObj, function ( cat ){
+
+                newCat = cat;
+            });
+        });
+
+        waitsFor(function (){
+
+            return newCat;
+
+        }, waitsForTimeout );
+
+        runs(function(){
+
+            jasmine.log( '类别添加完毕' );
+
+            expect( err).toBe( undefined );
+            expect( errMsg).toBe( undefined );
+
+            expect( newCat.name ).toEqual( newCatObj.name );
+            expect( newCat.type ).toEqual( newCatObj.type );
+            expect( newCat.itemcount ).toEqual( newCatObj.itemcount );
+        });
+
+        runs(function(){
+
+            jasmine.log( '修改item count / -' );
+
+            ctHandle.updateItemCount( { name: newCatObj.name }, '-2', function ( cats ){
+
+                updateFinished = true;
+            });
+        });
+
+        waitsFor(function (){
+
+            return updateFinished || err;
+
+        }, waitsForTimeout );
+
+        runs(function(){
+
+            // 重置
+            newCat = undefined;
+            err = undefined;
+            errMsg = undefined;
+
+            jasmine.log( '类别修改完毕/查找之' );
+
+            ctHandle.getByName( newCatObj.name, function ( cat ){
+
+                newCat = cat || null;
+            });
+        });
+
+        waitsFor(function (){
+
+            return newCat !== undefined || err;
+        });
+
+        runs(function(){
+
+            jasmine.log( '检查是否已经被删除' );
+
+            expect( err).toBe( undefined );
+            expect( errMsg).toBe( undefined );
+
+            expect( newCat ).toEqual( null );
         });
     });
 });

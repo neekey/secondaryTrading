@@ -29,16 +29,9 @@ _.extend( itemHandle.prototype, {
         User.getById( userId, function( user ){
 
             var newItem;
-            var newItemModle = {
-                userId: userId,
-                title: itemObj.title,
-                price: itemObj.price,
-                desc: itemObj.desc,
-                location: itemObj.location,
-                address: itemObj.address
-            };
+            itemObj.userId = userId;
 
-            newItem = new Item( newItemModle );
+            newItem = new Item( itemObj );
             newItem.save( function( err ){
 
                 if( err ){
@@ -72,11 +65,12 @@ _.extend( itemHandle.prototype, {
      *      address: {String},
      *      ids: [String],
      *      id: {String},
-     *      userId: {String}
+     *      userId: {String},
+     *      category: {String}
      * }
      * @param fields
      * @param next
-     * @example item.query( { title: 'hello', price: 20, priceType: '>=', location: [ 12, 32 ], ids: [ '34214', '3411', '4141'], id: 'kjdlakjf' }
+     * @example item.query( { title: 'hello', cat: '自行车', price: 20, priceType: '>=', location: [ 12, 32 ], ids: [ '34214', '3411', '4141'], id: 'kjdlakjf' }
      */
     query: function( query, fields, next ){
 
@@ -107,7 +101,8 @@ _.extend( itemHandle.prototype, {
 
                 case 'title':
                 case 'desc':
-                case 'address': {
+                case 'address':
+                case 'category': {
                     queryObj[ queryField ] = {
                         $regex: new RegExp( queryValue )
                     };

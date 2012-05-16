@@ -13,7 +13,9 @@ var Item = new schema({
     desc: { type: String, required: true },
     location: [ Number ],
     address: { type: String },
-    postDate: { type: Date }
+    postDate: { type: Date },
+    // 商品类别
+    category: { type: String }
 });
 
 mongoose.model( 'item', Item );

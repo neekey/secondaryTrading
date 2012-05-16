@@ -21,7 +21,7 @@ _.extend( categoryHandle.prototype, {
     /**
      * 添加图片
      * @param catObj
-     * @param next
+     * @param next( cat )
      */
     add: function( catObj, next ){
 
@@ -44,7 +44,7 @@ _.extend( categoryHandle.prototype, {
     /**
      * 根据id删除图片
      * @param query
-     * @param next
+     * @param next( [ cat ] )
      */
     del: function( query, next ){
 
@@ -96,7 +96,7 @@ _.extend( categoryHandle.prototype, {
      * @param query
      * @param {Object|Function}
      *  updateObj 若为Object，则为更新的对象，若为function，则动态更新 function( cat ){ cat.name = 'neekey'; return cat }
-     * @param next
+     * @param next ( cats )
      */
     update: function( query, updateObj, next ){
 
@@ -156,15 +156,16 @@ _.extend( categoryHandle.prototype, {
     },
 
     /**
-     * 更新cat的itemcount值
+     * 更新cat的itemcount值, todo 若发现count值修改后为0 且如果类别为 custom，则删除
      * @param query
      * @param updateCount 更改只  '+1' || '-1' || '=5'
-     * @param next
+     * @param next( cats )
      */
     updateItemCount: function ( query, updateCount, next ){
 
         var updateType = updateCount.substring( 0, 1 );
         var updateValue = parseInt( updateCount.substring( 1 ) );
+        var that = this;
 
         this.update( query, function ( cat ){
 
@@ -185,7 +186,44 @@ _.extend( categoryHandle.prototype, {
             cat.itemcount = newValue;
 
             return cat;
-        }, next );
+        }, function ( cats ){
+
+            if( cats.length === 0 ){
+
+                next( [] );
+            }
+            else{
+
+                var catLen = cats.length;
+                var catCount = 0;
+
+                cats.forEach( function ( cat ){
+
+                    // custom类型的若itemcount为0则自动删除
+                    if( cat.itemcount <= 0 && cat.type !== 'preset' ){
+
+                        that.del( { name: cat.name }, function (){
+
+                            catCount++;
+
+                            if( catCount === catLen ){
+
+                                next( cats );
+                            }
+                        });
+                    }
+                    else {
+
+                        catCount++;
+
+                        if( catCount === catLen ){
+
+                            next( cats );
+                        }
+                    }
+                });
+            }
+        } );
     },
 
     /**
@@ -204,7 +242,7 @@ _.extend( categoryHandle.prototype, {
     /**
      * 对分类进行检索
      * @param query
-     * @param next
+     * @param next ( cats )
      */
     query: function ( query, next ){
 
