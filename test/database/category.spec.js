@@ -142,7 +142,7 @@ describe('商品分类测试', function(){
         });
     });
 
-    it( 'update-修改分类', function(){
+    it( 'updateItemCount-修改分类', function(){
 
         var ctHandle = new DB.category();
         var newCat;
@@ -261,6 +261,63 @@ describe('商品分类测试', function(){
             expect( newCat.name ).toEqual( newCatObj.name );
             expect( newCat.type ).toEqual( newCatObj.type );
             expect( newCat.itemcount ).toEqual( newCatObj.itemcount );
+        });
+    });
+
+    it( 'del-删除分类', function(){
+
+        var ctHandle = new DB.category();
+        var newCat;
+        var err;
+        var errMsg;
+        var delFinished = false;
+        var getCatFinished = false;
+
+        ctHandle.on( '_error', function ( msg, e ){
+
+            err = e;
+            errMsg = msg;
+        });
+
+        runs(function(){
+
+            jasmine.log( '根据name删除' );
+
+            ctHandle.del( { name: newCatObj.name }, function ( cat ){
+
+                delFinished = true;
+            });
+        });
+
+        waitsFor(function (){
+
+            return delFinished;
+
+        }, waitsForTimeout );
+
+        runs(function(){
+
+            jasmine.log( '重新查询' );
+
+            ctHandle.getByName( { name: newCatObj.name }, function ( cat ){
+
+                newCat = cat;
+                getCatFinished = true;
+            });
+        });
+
+        waitsFor(function (){
+
+            return getCatFinished;
+        });
+
+        runs(function(){
+
+            jasmine.log( '类别查找完毕' );
+
+            expect( err ).toBe( undefined );
+            expect( errMsg).toBe( undefined );
+            expect( newCat ).toBe( undefined );
         });
     });
 });
