@@ -4,7 +4,8 @@ module.exports = {
 
     user: require( './userHandle' ),
     item: require( './itemHandle' ),
-    image: require( './imageHandle' )
+    image: require( './imageHandle' ),
+    category: require( './categoryHandle' )
 };
 
 /*==== 规范 ====
@@ -12,6 +13,4 @@ module.exports = {
     每个模块都需要济城EventEmitter
     所有的错误作为'_error'的形式抛出，返回的参数( msg, err )
     所有成功的操作直接以回调形式返回,参数中不需要err
-
-
 */

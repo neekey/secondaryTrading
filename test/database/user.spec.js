@@ -49,7 +49,7 @@ describe( '用户操作接口', function(){
         runs(function(){
             expect( user.email ).toEqual( email );
             expect( user.password ).toEqual( password );
-            expect( user.sex ).toEqual( 'undefined' );
+            expect( user.sex ).toEqual( 'male' );
         });
     });
 
@@ -64,7 +64,7 @@ describe( '用户操作接口', function(){
             location: [ 1234, 4567.1223339999 ],
             cellphone: 15158133775,
             qq: 184775761,
-            wangwang: 49808239898
+            wangwang: '49808239898'
         };
         var userAddFinished = false;
         var userGetFinished = false;
@@ -156,7 +156,7 @@ describe( '用户操作接口', function(){
         runs(function(){
             expect( user.email ).toEqual( email );
             expect( user.password ).toEqual( password );
-            expect( user.sex ).toEqual( 'undefined' );
+            expect( user.sex ).toEqual( 'male' );
         });
 
         // 监听错误
@@ -227,7 +227,7 @@ describe( '用户操作接口', function(){
         runs(function(){
             expect( user.email ).toEqual( email );
             expect( user.password ).toEqual( password );
-            expect( user.sex ).toEqual( 'undefined' );
+            expect( user.sex ).toEqual( 'male' );
         });
     });
 
@@ -241,7 +241,7 @@ describe( '用户操作接口', function(){
             sex: 'male',
             cellphone: 18797080,
             qq: 909287970,
-            wangwang: 50982095809285,
+            wangwang: '50982095809285',
             location: [ 23414, 24226 ],
             address: 'jasmine_user_api_updateById' + Date.now() + '_address'
         };
@@ -284,7 +284,7 @@ describe( '用户操作接口', function(){
         runs(function(){
             expect( user.email ).toEqual( email );
             expect( user.password ).toEqual( password );
-            expect( user.sex ).toEqual( 'undefined' );
+            expect( user.sex ).toEqual( 'male' );
             expect( user.address ).toEqual( undefined );
             expect( user.location.length ).toBe( 0 );
             expect( user.cellphone ).toEqual( undefined );
@@ -330,7 +330,7 @@ describe( '用户操作接口', function(){
             sex: 'male',
             cellphone: 18797080,
             qq: 909287970,
-            wangwang: 50982095809285,
+            wangwang: '50982095809285',
             location: [ 23414, 24226 ],
             address: 'jasmine_user_api_updateById' + Date.now() + '_address'
         };
@@ -373,7 +373,7 @@ describe( '用户操作接口', function(){
         runs(function(){
             expect( user.email ).toEqual( email );
             expect( user.password ).toEqual( password );
-            expect( user.sex ).toEqual( 'undefined' );
+            expect( user.sex ).toEqual( 'male' );
             expect( user.address ).toEqual( undefined );
             expect( user.location.length ).toBe( 0 );
             expect( user.cellphone ).toEqual( undefined );
