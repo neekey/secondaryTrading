@@ -12,7 +12,7 @@ var user = new schema({
     qq: { type: Number },
     wangwang: { type: String },
     // 用户感兴趣的类别，用户可以自己添加，也可以通过一定的算法动态修改
-    favor: [ String ]
+    favorite: [ String ]
 });
 
 mongoose.model( 'user', user );

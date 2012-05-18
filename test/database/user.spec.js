@@ -64,7 +64,8 @@ describe( '用户操作接口', function(){
             location: [ 1234, 4567.1223339999 ],
             cellphone: 15158133775,
             qq: 184775761,
-            wangwang: '49808239898'
+            wangwang: '49808239898',
+            favorite: [ '自行车', '数码产品', '健身用品' ]
         };
         var userAddFinished = false;
         var userGetFinished = false;
@@ -109,6 +110,7 @@ describe( '用户操作接口', function(){
             expect( user.cellphone ).toEqual( options.cellphone );
             expect( user.location[ 0 ] ).toEqual( options.location[ 0 ] );
             expect( user.location[ 1 ] ).toEqual( options.location[ 1 ] );
+            expect( JSON.stringify( user.favorite ) ).toEqual( JSON.stringify( options.favorite ) );
         });
     });
 
@@ -332,7 +334,8 @@ describe( '用户操作接口', function(){
             qq: 909287970,
             wangwang: '50982095809285',
             location: [ 23414, 24226 ],
-            address: 'jasmine_user_api_updateById' + Date.now() + '_address'
+            address: 'jasmine_user_api_updateById' + Date.now() + '_address',
+            favorite: [ '鞋包', '生活用品', '护肤品' ]
         };
         var userAddFinished = false;
         var userUpdateFinished = false;

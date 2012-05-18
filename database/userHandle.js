@@ -9,7 +9,7 @@ var _ = require( 'underscore' ),
     User = mongoose.model( 'user' ),
     EventEmitter = require('events').EventEmitter;
 
-var userOptions = [ 'sex', 'location', 'cellphone', 'qq', 'wangwang' ];
+var userOptions = [ 'sex', 'location', 'cellphone', 'qq', 'wangwang', 'favorite' ];
 
 var userHandle = function(){
 
@@ -130,6 +130,7 @@ _.extend( userHandle.prototype, {
                 user.cellphone = updateObj.cellphone || user.cellphone;
                 user.qq = updateObj.qq || user.qq;
                 user.wangwang = updateObj.wangwang || user.wangwang;
+                user.favorite = updateObj.favorite || user.favorite;
 
                 user.save( function( err ){
 
@@ -172,6 +173,7 @@ _.extend( userHandle.prototype, {
                 user.cellphone = updateObj.cellphone || user.cellphone;
                 user.qq = updateObj.qq || user.qq;
                 user.wangwang = updateObj.wangwang || user.wangwang;
+                user.favorite = updateObj.favorite || user.favorite;
 
                 user.save( function( err ){
 
