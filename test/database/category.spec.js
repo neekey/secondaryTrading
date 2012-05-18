@@ -45,6 +45,41 @@ describe('商品分类测试', function(){
             expect( newCat.type ).toEqual( newCatObj.type );
             expect( newCat.itemcount ).toEqual( newCatObj.itemcount );
         });
+
+
+        // 测试重复添加的情况
+        runs(function(){
+
+            newCat = undefined;
+            err = undefined;
+            errMsg = undefined;
+
+            jasmine.log( '重复添加一次' );
+
+            ctHandle.add( newCatObj, function ( cat ){
+
+                newCat = cat;
+            });
+        });
+
+        waitsFor(function (){
+
+            return newCat;
+        });
+
+        runs(function(){
+
+            jasmine.log( '重复添加完毕' );
+
+            expect( err).toBe( undefined );
+            expect( errMsg ).toBe( undefined );
+            expect( newCat).not.toBe( undefined );
+            expect( newCat.name ).toEqual( newCatObj.name );
+            expect( newCat.type ).toEqual( newCatObj.type );
+            expect( newCat.itemcount ).toEqual( newCatObj.itemcount + 1 );
+
+            newCatObj.itemcount++;
+        });
     });
 
     it( 'getByName-查找分类', function(){

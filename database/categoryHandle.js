@@ -20,25 +20,47 @@ _.extend( categoryHandle.prototype, {
 
     /**
      * 添加图片
-     * @param catObj
+     * @param {String|Object} catObj
+     *  分类的name值或者一个完整的category数据
+     *  若为string，则会自动构造为{ name: catObj, type: 'custom', itemcount: 0 }
+     *  两种类型都会先查找对应的cat是否已经存在，如果不存在则新增，已经存在则itemcount++
      * @param next( cat )
      */
     add: function( catObj, next ){
 
         var that = this;
-        var newCat = new CategoryModel( catObj );
+        var ifObj = typeof catObj === 'object';
+        var catName = ifObj ? catObj.name : catObj;
 
-        newCat.save( function ( err ){
+        this.getByName( catName, function ( cat ){
 
-            if( err ){
+            if( cat ){
 
-                that.emit( '_error', '添加分类出错', err );
+                that.updateItemCount( { name: catName }, '+1', function ( cats ){
+
+                    next( cats[ 0 ] );
+                });
             }
             else {
 
-                next( newCat );
+                catObj = ifObj ? catObj : { name: catObj, type: 'custom', itemcount: 0 };
+
+                var newCat = new CategoryModel( catObj );
+
+                newCat.save( function ( err ){
+
+                    if( err ){
+
+                        that.emit( '_error', '添加分类出错', err );
+                    }
+                    else {
+
+                        next( newCat );
+                    }
+                });
             }
         });
+
     },
 
     /**

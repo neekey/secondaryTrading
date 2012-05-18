@@ -8,6 +8,7 @@ var Util = require('util');
 var mongoose = require( 'mongoose' );
 var UserHandle = require( './userHandle' );
 var ImgHandle = require( './imageHandle' );
+var CatHandle = require( './categoryHandle' );
 var Item = mongoose.model( 'item');
 var EventEmitter = require('events').EventEmitter;
 
@@ -20,10 +21,17 @@ Util.inherits( itemHandle, EventEmitter );
 
 _.extend( itemHandle.prototype, {
 
+    /**
+     * 添加新商品
+     * @param userId
+     * @param itemObj
+     * @param next
+     */
     add: function( userId, itemObj, next ){
 
         var that = this;
         var User = new UserHandle();
+        var catHandle = new CatHandle();
 
         // 检查userId是否存在
         User.getById( userId, function( user ){
@@ -40,9 +48,26 @@ _.extend( itemHandle.prototype, {
                 }
                 else {
 
-                    next( newItem );
+                    var category = newItem.category;
+
+                    // 若给定了category，则更新category先关信息
+                    if( category ){
+
+                        catHandle.add( category, function ( cat ){
+
+                            next( newItem );
+                        });
+                    }
+                    else {
+                        next( newItem );
+                    }
                 }
             });
+        });
+
+        catHandle.on( '_error', function ( msg, err){
+
+            that.emit( '_error', msg, err );
         });
 
         // 若id不存在
@@ -70,7 +95,7 @@ _.extend( itemHandle.prototype, {
      * }
      * @param fields
      * @param next
-     * @example item.query( { title: 'hello', cat: '自行车', price: 20, priceType: '>=', location: [ 12, 32 ], ids: [ '34214', '3411', '4141'], id: 'kjdlakjf' }
+     * @example item.query( { title: 'hello', category: '自行车', price: 20, priceType: '>=', location: [ 12, 32 ], ids: [ '34214', '3411', '4141'], id: 'kjdlakjf' }
      */
     query: function( query, fields, next ){
 
@@ -309,9 +334,17 @@ _.extend( itemHandle.prototype, {
     del: function( itemId, next ){
 
         var that = this;
+        var catHandle = new CatHandle();
+
+        catHandle.on( '_error', function ( msg, err ){
+
+            that.emit( '_error', msg, err );
+        });
 
         // 检查itemId是否存在
         this.getById( itemId, function( item ){
+
+            var category = item.category;
 
             item.remove( function( err ){
 
@@ -321,7 +354,11 @@ _.extend( itemHandle.prototype, {
                 }
                 else {
 
-                    next( item );
+                    // 更新该分类的信息
+                    catHandle.updateItemCount( { name: category }, '-1', function (){
+
+                        next( item );
+                    });
                 }
             });
         });
@@ -336,15 +373,25 @@ _.extend( itemHandle.prototype, {
     update: function( itemId, updateObj, next ){
 
         var that = this;
+        var catHandle = new CatHandle();
+
+        catHandle.on( '_error', function ( msg, err ){
+
+            that.emit( '_error', msg, err );
+        });
 
         // 检查itemId是否存在
         this.getById( itemId, function( item ){
+
+            var oldCat = item.category;
+            var newCat = updateObj.category;
 
             item.title = updateObj.title || item.title;
             item.price = updateObj.price || item.price;
             item.desc = updateObj.desc || item.desc;
             item.location = updateObj.location || item.location;
             item.address = updateObj.address || item.address;
+            item.category = updateObj.category || item.category;
 
             item.save( function( err ){
 
@@ -354,7 +401,46 @@ _.extend( itemHandle.prototype, {
                 }
                 else {
 
-                    next( item );
+                    // 下面若商品类别有变更，则对新类别做添加，旧类别做删除操作
+                    var ifNewCatFinished = false;
+                    var ifOldCatFinished = false;
+
+                    if( newCat ){
+
+                        catHandle.add( newCat, function (){
+
+                            ifNewCatFinished = true;
+
+                            if( ifNewCatFinished && ifOldCatFinished ){
+
+                                next( item );
+                            }
+                        });
+                    }
+                    else {
+                        ifNewCatFinished = true;
+                    }
+
+                    if( oldCat ){
+
+                        catHandle.del( { name: oldCat }, function (){
+
+                            ifOldCatFinished = true;
+
+                            if( ifNewCatFinished && ifOldCatFinished ){
+
+                                next( item );
+                            }
+                        });
+                    }
+                    else {
+                        ifOldCatFinished = true;
+                    }
+
+                    if( ifNewCatFinished && ifOldCatFinished ){
+
+                        next( item );
+                    }
                 }
             });
         });
