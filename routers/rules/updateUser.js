@@ -8,6 +8,7 @@ var API = require( '../../api/api.js' );
  * @param {String} location 用户的坐标 x,y
  * @param {String} address 用户地址
  * @param {String} cellphone 手机号
+ * @param favorite 用户感兴趣的类别，用逗号隔开
  * @param {String} qq QQ号
  * @param {String} wangwang 旺旺号
  */
@@ -24,9 +25,10 @@ var register = {
         var userId = data.id;
         var updateObj = {
             sex: data.sex,
-            location: data.location.split( ',' ),
+            location: data.location ? data.location.split( ',' ) : undefined,
             address: data.address,
             cellphone: data.cellphone,
+            favorite: data.favorite ? data.favorite.split( ',' ) : undefined,
             qq: data.qq,
             wangwang: data.wangwang
         };
