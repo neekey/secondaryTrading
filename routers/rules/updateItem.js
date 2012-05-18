@@ -36,6 +36,7 @@ var img = {
         var title = body.title;
         var desc = body.desc;
         var price = parseFloat( body.price ) || undefined;
+        var category = body.category;
         var latlng = body.latlng;
         var address = body.address;
         var removeImgs = body.removeImgs ? body.removeImgs.split( ',' ) : [];
@@ -50,7 +51,8 @@ var img = {
             desc: desc,
             price: price,
             location: latlng ? latlng.split( ',' ) : undefined,
-            address: address
+            address: address,
+            category: category
         };
 
         imgHandle.on( '_error', function ( msg, error ){

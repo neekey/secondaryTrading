@@ -20,6 +20,7 @@ var newItem =  {
         var price = parseFloat( body.price ) || 0;
         var latlng = body.latlng;
         var address = body.address;
+        var category = body.category;
         var pics = [];
 
         var i, dataString, ifError = false, picCheckCount = 0;
@@ -155,7 +156,8 @@ var newItem =  {
                 desc: desc,
                 price: price,
                 location: latlng.split( ',' ),
-                address: address
+                address: address,
+                category: category
             }, function ( newItem ){
 
                 var itemId = newItem.id;
