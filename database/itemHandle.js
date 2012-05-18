@@ -53,7 +53,7 @@ _.extend( itemHandle.prototype, {
                     // 若给定了category，则更新category先关信息
                     if( category ){
 
-                        catHandle.add( category, function ( cat ){
+                        catHandle.add( category, true, function ( cat ){
 
                             next( newItem );
                         });
@@ -407,7 +407,7 @@ _.extend( itemHandle.prototype, {
 
                     if( newCat ){
 
-                        catHandle.add( newCat, function (){
+                        catHandle.add( newCat, true, function (){
 
                             ifNewCatFinished = true;
 

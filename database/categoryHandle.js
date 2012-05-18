@@ -24,17 +24,32 @@ _.extend( categoryHandle.prototype, {
      *  分类的name值或者一个完整的category数据
      *  若为string，则会自动构造为{ name: catObj, type: 'custom', itemcount: 0 }
      *  两种类型都会先查找对应的cat是否已经存在，如果不存在则新增，已经存在则itemcount++
+     * @param {Boolean} 若已经存在一个为name的分类，是否自动增加其itemcount，若为false，则社么也不做
      * @param next( cat )
      */
-    add: function( catObj, next ){
+    add: function( catObj, ifIncrease, next ){
 
         var that = this;
         var ifObj = typeof catObj === 'object';
         var catName = ifObj ? catObj.name : catObj;
 
+        if( typeof ifIncrease === 'function' ){
+
+            next = ifIncrease;
+            ifIncrease = false;
+        }
+        else {
+
+            ifIncrease = ifIncrease || false;
+        }
+
+        if( !next ){
+            next = function(){};
+        }
+
         this.getByName( catName, function ( cat ){
 
-            if( cat ){
+            if( cat && ifIncrease ){
 
                 that.updateItemCount( { name: catName }, '+1', function ( cats ){
 

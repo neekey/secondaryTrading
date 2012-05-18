@@ -8,6 +8,9 @@ module.exports = {
     category: require( './categoryHandle' )
 };
 
+// 添加初始化分类数据
+require( './categoryDefault' );
+
 /*==== 规范 ====
 
     每个模块都需要济城EventEmitter
