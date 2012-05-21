@@ -80,6 +80,7 @@ _.extend( itemHandle.prototype, {
 
     /**
      * 根据条件检索商品
+     * // todo 对title/desc/address 使用or，category使用 数据 in
      * @param query {Object} {
      *      title: {String},
      *      desc: {String},

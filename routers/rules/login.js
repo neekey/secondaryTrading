@@ -3,9 +3,9 @@ var Auth = require( '../../auth/' );
 
 var login = {
     type: 'post',
-        rule: '/login',
-        middleware: [ 'shouldNotLogin' ],
-        fn: function( req, res ){
+    rule: '/login',
+    middleware: [ 'shouldNotLogin' ],
+    fn: function( req, res ){
 
         var auth = new Auth();
 
