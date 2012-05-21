@@ -92,7 +92,7 @@ _.extend( itemHandle.prototype, {
      *      ids: [String],
      *      id: {String},
      *      userId: {String},
-     *      category: {String}
+     *      category: [String]
      * }
      * @param fields
      * @param next
@@ -127,8 +127,7 @@ _.extend( itemHandle.prototype, {
 
                 case 'title':
                 case 'desc':
-                case 'address':
-                case 'category': {
+                case 'address': {
                     queryObj[ queryField ] = {
                         $regex: new RegExp( queryValue )
                     };
@@ -189,9 +188,10 @@ _.extend( itemHandle.prototype, {
 
                     break;
                 }
-                case 'ids': {
+                case 'ids':
+                case 'category': {
 
-                    queryObj._id = {
+                    queryObj[ queryField ] = {
                         $in: queryValue
                     };
 
