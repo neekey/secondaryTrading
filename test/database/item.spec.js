@@ -451,7 +451,7 @@ function newItemObj( apiType ){
         title: 'jasmine_item_api_' + apiType + Date.now() + '_title',
         price: Date.now(),
         desc: 'jasmine_item_api_' + apiType + Date.now() + '_desc',
-        location: [ Date.now() + 1, Date.now() + 10 ],
+        location: [ 120 + Math.random(), 30 + Math.random() ],
         category: 'jasmine_item_api_' + apiType + Date.now() + '_category'
     };
 

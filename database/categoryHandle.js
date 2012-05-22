@@ -36,11 +36,11 @@ _.extend( categoryHandle.prototype, {
         if( typeof ifIncrease === 'function' ){
 
             next = ifIncrease;
-            ifIncrease = false;
+            ifIncrease = true;
         }
         else {
 
-            ifIncrease = ifIncrease || false;
+            ifIncrease = ( ifIncrease === undefined ? true : ifIncrease );
         }
 
         if( !next ){
@@ -49,12 +49,19 @@ _.extend( categoryHandle.prototype, {
 
         this.getByName( catName, function ( cat ){
 
-            if( cat && ifIncrease ){
+            if( cat ){
 
-                that.updateItemCount( { name: catName }, '+1', function ( cats ){
+                if( ifIncrease ){
 
-                    next( cats[ 0 ] );
-                });
+                    that.updateItemCount( { name: catName }, '+1', function ( cats ){
+
+                        next( cats[ 0 ] );
+                    });
+                }
+                else {
+
+                    next( cat );
+                }
             }
             else {
 

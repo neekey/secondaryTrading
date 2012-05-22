@@ -61,7 +61,7 @@ describe( '用户操作接口', function(){
         var password = 'jasmine_user_api_add_with_options' + Date.now();
         var options = {
             sex: 'male',
-            location: [ 1234, 4567.1223339999 ],
+            location: [ 120 + Math.random(), 30 + Math.random() ],
             cellphone: 15158133775,
             qq: 184775761,
             wangwang: '49808239898',
@@ -244,7 +244,7 @@ describe( '用户操作接口', function(){
             cellphone: 18797080,
             qq: 909287970,
             wangwang: '50982095809285',
-            location: [ 23414, 24226 ],
+            location: [ 120 + Math.random(), 30 + Math.random() ],
             address: 'jasmine_user_api_updateById' + Date.now() + '_address'
         };
         var userAddFinished = false;
@@ -333,7 +333,7 @@ describe( '用户操作接口', function(){
             cellphone: 18797080,
             qq: 909287970,
             wangwang: '50982095809285',
-            location: [ 23414, 24226 ],
+            location: [ 120 + Math.random(), 30 + Math.random() ],
             address: 'jasmine_user_api_updateById' + Date.now() + '_address',
             favorite: [ '鞋包', '生活用品', '护肤品' ]
         };

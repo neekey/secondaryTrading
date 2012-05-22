@@ -5,7 +5,7 @@ var API = require( '../../api/api.js' );
  * @param {String} email 用户email
  * @param {String} id 用户id 若给定了id 则无视email
  * @param {String} sex 用户性别
- * @param {String} location 用户的坐标 x,y
+ * @param {String} location 用户的坐标 longitude,latitude
  * @param {String} address 用户地址
  * @param {String} cellphone 手机号
  * @param favorite 用户感兴趣的类别，用逗号隔开

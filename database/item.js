@@ -11,7 +11,7 @@ var Item = new schema({
     title: { type: String, required: true },
     price: { type: Number, required: true },
     desc: { type: String, required: true },
-    location: [ Number ],
+    location: { type: Array, index: '2d' },
     address: { type: String },
     postDate: { type: Date },
     // 商品类别

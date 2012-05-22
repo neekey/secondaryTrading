@@ -41,5 +41,5 @@ PresetCats.forEach( function ( catName ){
         name: catName,
         type: 'preset',
         itemcount: 0
-    });
+    }, false );
 });

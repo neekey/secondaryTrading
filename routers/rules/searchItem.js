@@ -5,7 +5,7 @@ var API = require( '../../api/api.js' );
  * @param title 商品标题中需要包含的关键词
  * @param desc 商品表述中需要包含的关键词
  * @param address 商品地址中需要包含的关键词
- * @param location 用户的坐标 用逗号隔开
+ * @param location 用户的坐标 用逗号隔开 longitude,latitude
  * @param maxDistance 根据用户坐标的搜索范围 若该值不给定，则直接寻找与location相等的项目
  * @param price 用户价格的值，与priceType一起使用
  * @param priceType 价格比较类型 todo 添加多条件，用逗号隔开

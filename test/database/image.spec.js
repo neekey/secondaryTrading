@@ -416,7 +416,7 @@ function newItemObj( apiType ){
         title: 'jasmine_item_api_' + apiType + Date.now() + '_title',
         price: 18739279 + parseInt( Math.random() * 100  + 1 ),
         desc: 'jasmine_item_api_' + apiType + Date.now() + '_desc',
-        location: [ Date.now() + 1, Date.now() + 10 ]
+        location: [ 120 + Math.random(), 30 + Math.random() ]
     };
 
     return itemObj;
