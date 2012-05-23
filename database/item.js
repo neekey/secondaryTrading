@@ -11,6 +11,7 @@ var Item = new schema({
     title: { type: String, required: true },
     price: { type: Number, required: true },
     desc: { type: String, required: true },
+    // GPS 坐标 [ latitude, longitude ]
     location: { type: Array, index: '2d' },
     address: { type: String },
     postDate: { type: Date },

@@ -3,7 +3,18 @@ var API = require( '../../api/api.js' );
 var Auth = require( '../../auth/' );
 var IMG = require( '../../image_handle' );
 
-var newItem =  {
+/**
+ * @param title 商品标题
+ * @param desc 商品描述
+ * @param price 商品价格
+ * @param latlng 商品地理位置坐标 latitude,longitude
+ * @param address 商品地址文字描述
+ * @param category 商品类别（一个） 字符串
+ * @param pic1 新图片
+ * @param pic2 新图片
+ * @param pic3 新图片
+ */
+var newItem = {
     type: 'post',
     rule: '/newItem',
     middleware: [ 'shouldLogin' ],

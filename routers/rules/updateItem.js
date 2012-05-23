@@ -11,7 +11,7 @@ var IMG = require( '../../image_handle' );
  * @param title item的新title
  * @param desc
  * @param price
- * @param latlng longitude,latitude
+ * @param latlng latitude,longitude
  * @param address
  * @param removeImgs 需要删除的图片 多个id以,隔开
  * @param addImgNum 新增的图片个数

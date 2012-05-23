@@ -6,6 +6,7 @@ var user = new schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     sex: { type: String, 'default': 'male' },
+    // GPS 坐标 [ latitude, longitude ]
     location: { type: Array, index: '2d' },
     address: { type: String },
     cellphone: { type: Number },
