@@ -47,6 +47,7 @@ var guessYouLike = {
             if( userLocation && userLocation.length > 0 ){
 
                 location = userLocation.split( ',' );
+                location = [ parseFloat( location[ 0 ] ), parseFloat( location[ 1 ] ) ];
             }
             else {
 
