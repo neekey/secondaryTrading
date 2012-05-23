@@ -45,12 +45,20 @@ var img = {
         var imgHandleLen = removeImgs.length + addImgs.length;
         var imgHandleCount = 0;
 
+        var location = latlng ? latlng.split( ',' ) : undefined;
+
+        // 如果location给定了，则转化为数字
+        if( location ){
+
+            location = [ parseFloat( location[ 0 ]), parseFloat( location[ 1 ] ) ];
+        }
+
         // 构造用于更新的item object
         var updateObj = {
             title: title,
             desc: desc,
             price: price,
-            location: latlng ? latlng.split( ',' ) : undefined,
+            location: location,
             address: address,
             category: category
         };

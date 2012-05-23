@@ -144,10 +144,7 @@ _.extend( itemHandle.prototype, {
                         var earthRadius = 6378;
 
                         queryObj.location = {
-                            // 数据库中储存的数据为 [latitude, longitude]
-                            // 但是mongodb要求的是 [ longitude, latitude ]
-                            // 因此这里需要做反转
-                            $nearSphere: [ queryValue[ 1 ], queryValue[ 0 ] ],
+                            $nearSphere: queryValue,
                             // 计算最远距离对应的地球弧度，因此需要除以地球半径
                             // 若不给定，则默认为1km
                             $maxDistance: maxDistance ? ( maxDistance / earthRadius ) : ( 1 / earthRadius )

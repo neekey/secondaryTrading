@@ -35,6 +35,12 @@ var register = {
         var methodName;
         var methodParam;
 
+        // 如果location给定了，则转化为数字
+        if( updateObj.location ){
+
+            updateObj.location = [ parseFloat( updateObj.location[ 0 ]), parseFloat( updateObj.location[ 1 ] ) ];
+        }
+
         // 监听抛出的错误
         User.on( '_error', function( msg, error ){
 

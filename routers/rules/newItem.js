@@ -159,14 +159,21 @@ var newItem = {
 
             var userId = userInfo.id;
             var count = 0;
+            var location = latlng ? latlng.split( ',' ) : undefined;
             var i, pic;
+
+            // 如果location给定了，则转化为数字
+            if( location ){
+
+                location = [ parseFloat( location[ 0 ]), parseFloat( location[ 1 ] ) ];
+            }
 
             // 新建商品
             newItem.add( userId, {
                 title: title,
                 desc: desc,
                 price: price,
-                location: latlng.split( ',' ),
+                location: location,
                 address: address,
                 category: category
             }, function ( newItem ){
