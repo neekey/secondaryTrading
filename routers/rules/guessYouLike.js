@@ -4,6 +4,7 @@ var Auth = require( '../../auth/' );
 
 /**
  * 对用户进行智能推荐
+ * @param location {String} longitude,latitude
  */
 var guessYouLike = {
     type: 'get',
@@ -14,6 +15,7 @@ var guessYouLike = {
         // 获取用户信息
         var itemHandle = new DB.item();
         var userHandle = new DB.user();
+        var userLocation = req.query.location;
         var auth = new Auth();
         var userInfo = auth.getAuthInfo( req );
         var userId = userInfo.id;
@@ -40,7 +42,16 @@ var guessYouLike = {
 
         userHandle.getById( userId, function ( user ){
 
-            var location = user.location;
+            var location;
+
+            if( userLocation && userLocation.length > 0 ){
+
+                location = userLocation.split( ',' );
+            }
+            else {
+
+                location = user.location;
+            }
             var favorite = user.favorite;
 
             // 若位置信息和用户偏好都不存在，则无法推荐，返回空数组
