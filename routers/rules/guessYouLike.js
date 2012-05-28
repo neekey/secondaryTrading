@@ -85,10 +85,24 @@ var guessYouLike = {
 
                 filter( userHandle, user, items, 10, function ( results ){
 
+                    var _items = [];
+
+                    // items被json化后无法找到imgs成员
+                    // 先把每个item的数据部分转化出来
+                    results.forEach(function ( item ){
+
+                        var _item = item.toJSON();
+
+                            _item.imgs = item.imgs;
+                            _item.user = item.user;
+
+                            _items.push( _item );
+                    });
+
                     API.send( req, res, {
                         result: true,
                         type: 'guessyoulike',
-                        data: results
+                        data: _items
                     });
                 });
             });
