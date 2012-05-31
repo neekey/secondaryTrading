@@ -53,7 +53,8 @@ var guessYouLike = {
 
                 location = user.location;
             }
-            var favorite = user.favorite;
+            var favorite = user.favorite || [];
+            var buyCategory = user.buyCategory || [];
 
             // 若位置信息和用户偏好都不存在，则无法推荐，返回空数组
             if( !location && !favorite ){
@@ -67,7 +68,9 @@ var guessYouLike = {
                 return;
             }
 
-            var queryObj = {};
+            var queryObj = {
+                category: []
+            };
 
             if( location && location.length > 0  ){
 
@@ -76,9 +79,19 @@ var guessYouLike = {
                 queryObj[ 'maxDistance' ] = 20;
             }
 
-            if( favorite && favorite.length > 0 ){
+            if( favorite.length > 0 ){
 
-                queryObj[ 'category' ] = favorite;
+                queryObj.category.concat( favorite );
+            }
+
+            if( buyCategory.length > 0 ){
+
+                queryObj.category.concat( buyCategory );
+            }
+
+            if( queryObj.category.length === 0 ){
+
+                delete queryObj.category;
             }
 
             itemHandle.query( queryObj, function ( items ){
@@ -168,9 +181,9 @@ function filter( userHandle, user, items, max, next ){
  */
 function estimate( userHandle, user, item, next ){
 
-    // 20km内的距离在0.2左右
+    // 5km内的距离在0.05左右
     // 商品距离( 55% ) + 卖家距离( 35% ) + 卖家质量( 10% )
-    // 0.1 / ( 0.1 + 0.2 ) * 55 + 0.1 / ( 0.1 + 0.2 ) * 35 + 1 * 10
+    // 0.01 / ( 0.01 + 0.02 ) * 55 + 0.01 / ( 0.01 + 0.05 ) * 35 + 1 * 10
     var itemDistanceWeight = 55;
     var sellerDistanceWeight = 35;
     var sellerInfoScoreWeight = 10;

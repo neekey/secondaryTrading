@@ -1,5 +1,6 @@
 var DB = require( '../../database/' );
 var API = require( '../../api/api.js' );
+var Auth = require( '../../auth/' );
 
 /**
  * @param title 商品标题中需要包含的关键词
@@ -28,6 +29,9 @@ var searchItem = {
         var queryObj = {};
         var queryField = undefined;
         var queryValue = undefined;
+        var auth = new Auth();
+        var userInfo = auth.getAuthInfo( req );
+        var userId = userInfo.id;
         var fields = query.fields ? query.fields.split( ',' ) : [];
 
         // 最多获取的items数量
@@ -81,17 +85,21 @@ var searchItem = {
 
                 var _item = item.toJSON();
 
-                if( itemCount < maxLen ){
+                if( item.user._id != userId ){
 
-                    _item.imgs = item.imgs;
-                    _item.user = item.user;
+                    console.log( item.user._id, userId );
+                    if( itemCount < maxLen ){
 
-                    _items.push( _item );
+                        _item.imgs = item.imgs;
+                        _item.user = item.user;
 
-                    itemCount++;
+                        _items.push( _item );
+
+                        itemCount++;
+                    }
+
+                    _ids.push( _item._id );
                 }
-
-                _ids.push( _item._id );
             });
 
             API.send( req, res, {

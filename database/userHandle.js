@@ -193,6 +193,58 @@ _.extend( userHandle.prototype, {
             }
 
         });
+    },
+
+    /**
+     * 添加用户的购买记录
+     * @param category 购买的商品所属的类别
+     */
+    addBuyRecord: function( email, category, next ){
+
+        var that = this;
+
+        console.log( category );
+
+        this.get( email, function( user ){
+
+            var buyCategory = user.buyCategory;
+            var ifExist = false;
+            var newCategoryObj = [];
+
+            buyCategory.forEach(function( cat, index ){
+
+
+                if( cat.indexOf( category + ':' ) === 0 ){
+
+                    ifExist = true;
+
+                    console.log( index );
+                    console.log( category + ':' + ( parseInt( cat.split( ':' )[ 1 ] ) + 1 ) );
+                    cat = category + ':' + ( parseInt( cat.split( ':' )[ 1 ] ) + 1 );
+                }
+
+                newCategoryObj.push( cat )
+            });
+
+            if( !ifExist ){
+
+                newCategoryObj.push( category + ':1' );
+            }
+
+            user.buyCategory = newCategoryObj;
+
+            user.save(function( err, u ){
+
+                if( err ){
+
+                    that.emit( '_error', '保存购买记录失败', err );
+                }
+                else {
+
+                    next( user );
+                }
+            });
+        });
     }
 });
 

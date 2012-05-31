@@ -39,6 +39,8 @@ _.extend( itemHandle.prototype, {
             var newItem;
             itemObj.userId = userId;
 
+            //todo 添加postdate
+
             newItem = new Item( itemObj );
             newItem.save( function( err ){
 
@@ -221,8 +223,10 @@ _.extend( itemHandle.prototype, {
 
         Item.find( queryObj, fields, function( err, items ){
 
+            console.log( queryObj, query );
             if( err ){
 
+                console.log( err );
                 that.emit( '_error', '查找商品失败!', err );
             }
             else {
