@@ -85,7 +85,8 @@ var searchItem = {
 
                 var _item = item.toJSON();
 
-                if( item.user._id != userId ){
+                // 若制定了id，则为获取制定商品信息，则不做userid过滤
+                if( query.id || item.user._id != userId ){
 
                     console.log( item.user._id, userId );
                     if( itemCount < maxLen ){
