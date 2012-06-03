@@ -1,7 +1,7 @@
 var mongoose = require( 'mongoose' ),
     schema = mongoose.Schema;
 
-// 用户表
+// 图片表
 var Image = new schema({
     itemId: { type: schema.ObjectId, required: true },
     path: { type: String, required: true }, // 文件储存路径 相对根目录的相对路径或者为决定路径

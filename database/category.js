@@ -12,7 +12,7 @@ var Category = new schema({
     type: { type: String, required: true, 'default': 'custom' },
     // 该分类下的商品数量
     // 若一个自定义分类下商品下降到0，将会被删除
-    itemcount: { type: Number, default: 0 }
+    itemcount: { type: Number, 'default': 0 }
 });
 
 mongoose.model( 'category', Category );

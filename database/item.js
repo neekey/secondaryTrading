@@ -5,7 +5,7 @@
 var mongoose = require( 'mongoose' ),
     schema = mongoose.Schema;
 
-// 用户表
+// 商品表
 var Item = new schema({
     userId: { type: schema.ObjectId, required: true },
     title: { type: String, required: true },
